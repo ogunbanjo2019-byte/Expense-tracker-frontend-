@@ -56,7 +56,7 @@ if (backLogin) {
 }
 
 // ================= AUTH CHECK =================
-async function checkAuth() {
+function checkAuth() {
     const storedToken = localStorage.getItem('token');
 
     if (!storedToken) {
@@ -70,6 +70,8 @@ async function checkAuth() {
     authContainer.style.display = "none";
     appContainer.style.display = "block";
 
+    // ❌ DO NOT verify token here
+    // Just load expenses
     loadExpenses();
 }
 // ================= LOGIN =================
