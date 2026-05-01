@@ -65,13 +65,14 @@ function checkAuth() {
         return;
     }
 
+    // ✅ Keep token
     token = storedToken;
 
+    // ✅ Show dashboard
     authContainer.style.display = "none";
     appContainer.style.display = "block";
 
-    // ❌ DO NOT verify token here
-    // Just load expenses
+    // ✅ Load data (no validation here)
     loadExpenses();
 }
 // ================= LOGIN =================
