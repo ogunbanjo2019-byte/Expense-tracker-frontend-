@@ -77,8 +77,6 @@ loginForm && (loginForm.onsubmit = async (e) => {
 
             localStorage.setItem('token', data.token);
             token = data.token;
-
-            console.log("TOKEN SAVED:", localStorage.getItem('token'));
             authContainer.style.display = "none";
             appContainer.style.display = "block";
             loadExpenses();
