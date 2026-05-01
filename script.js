@@ -88,63 +88,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================= LOGIN =================
     loginForm && (loginForm.onsubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+    try {
+        const res = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-            const data = await res.json();
+        const data = await res.json();
+        console.log("LOGIN RESPONSE:", data); // 👈 ADD THIS
 
-            if (res.ok) {
-                localStorage.setItem('token', data.token);
-                token = data.token;
-                checkAuth();
-            } else {
-                alert(data.message || "Invalid login");
-            }
+        if (res.ok) {
+            localStorage.setItem('token', data.token);
+            token = data.token;
 
-        } catch {
-            alert("Server is waking up... try again");
-            console.log("LOGIN RESPONSE:", data);g
+            console.log("TOKEN SAVED:", token); // 👈 DEBUG
+
+            checkAuth(); // 👈 move to dashboard
+        } else {
+            alert(data.message || "Login failed");
         }
-    });
+
+    } catch (err) {
+        console.log(err);
+        alert("Server error");
+    }
+});
 
     // ================= SIGNUP =================
-    signupForm && (signupForm.onsubmit = async (e) => {
-        e.preventDefault();
+signupForm && (signupForm.onsubmit = async (e) => {
+    e.preventDefault();
 
-        const name = document.getElementById('signup-name').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password })
-            });
+    try {
+        const res = await fetch(`${BASE_URL}/auth/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+        });
 
-            const data = await res.json();
+        const data = await res.json(); // ✅ THIS WAS MISSING
 
-            if (res.ok) {
-                alert("Signup successful! Login now.");
-                signupBox.style.display = 'none';
-                loginBox.style.display = 'block';
-            } else {
-                alert(data.message || "Signup failed");
-            }
+        console.log("SIGNUP RESPONSE:", data); // ✅ now safe
 
-        } catch {
-            alert("Server is waking up... try again");
+        if (res.ok) {
+            alert("Signup successful! Now login.");
+            signupBox.style.display = 'none';
+            loginBox.style.display = 'block';
+        } else {
+            alert(data.message || "Signup failed");
         }
-    });
+
+    } catch (err) {
+        console.log(err);
+        alert("Server error");
+    }
+});
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
