@@ -121,6 +121,11 @@ li button:hover {
     margin-top: 10px;
 }
 
+#message {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 @media (max-width: 400px) {
     #login-box,
     #signup-box,

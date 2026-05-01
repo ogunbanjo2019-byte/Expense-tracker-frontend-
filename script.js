@@ -198,6 +198,8 @@ document.addEventListener("click", async (e) => {
 
     const id = e.target.getAttribute("data-id");
 
+    const message = document.getElementById("message") || { textContent: "", style: {} };
+
     try {
         const res = await fetch(`${BASE_URL}/expenses/${id}`, {
             method: "DELETE",
@@ -209,9 +211,16 @@ document.addEventListener("click", async (e) => {
         const data = await res.json();
 
         if (res.ok) {
-            message.textContent = data.message || "Deleted successfully";
+            // ✅ Show success message
+            message.textContent = "Deleted successfully";
             message.style.color = "green";
+
+            // ✅ Remove from UI instantly
+            e.target.parentElement.remove();
+
+            // ✅ Reload total & sync
             loadExpenses();
+
         } else {
             message.textContent = data.message || "Delete failed";
             message.style.color = "red";
@@ -222,6 +231,9 @@ document.addEventListener("click", async (e) => {
         message.textContent = "Server error";
         message.style.color = "red";
     }
+    setTimeout(() => {
+        message.textContent = "";
+    }, 2000);
 });
 
 // ================= ADD EXPENSE =================
