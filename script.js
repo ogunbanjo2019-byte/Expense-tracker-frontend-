@@ -13,9 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const appContainer = document.getElementById('app');
 
     const logoutBtn = document.getElementById('logout-btn');
-
-    const BASE_URL = "https://my-expenses-tracker-9uhz.onrender.com/api";
-
+    
+    
+    const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
+    
     let token = localStorage.getItem('token');
 
     showSignup.onclick = (e) => {
