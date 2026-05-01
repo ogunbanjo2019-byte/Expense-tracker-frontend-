@@ -73,8 +73,6 @@ loginForm && (loginForm.onsubmit = async (e) => {
 
         const data = await res.json();
 
-        console.log("LOGIN RESPONSE:", data);
-
         if (res.ok && data.token) {
 
             localStorage.setItem('token', data.token);
