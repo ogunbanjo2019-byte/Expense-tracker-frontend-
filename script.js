@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
 const loginBox = document.getElementById('login-box');
 const signupBox = document.getElementById('signup-box');
 const forgotBox = document.getElementById('forgot-box');
@@ -23,37 +24,29 @@ const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 let token = localStorage.getItem('token');
 
 // ================= SWITCH SCREENS =================
-if (showSignup) {
-    showSignup.onclick = (e) => {
-        e.preventDefault();
-        loginBox.style.display = 'none';
-        signupBox.style.display = 'block';
-    };
-}
+showSignup && (showSignup.onclick = (e) => {
+    e.preventDefault();
+    loginBox.style.display = 'none';
+    signupBox.style.display = 'block';
+});
 
-if (showLogin) {
-    showLogin.onclick = (e) => {
-        e.preventDefault();
-        signupBox.style.display = 'none';
-        loginBox.style.display = 'block';
-    };
-}
+showLogin && (showLogin.onclick = (e) => {
+    e.preventDefault();
+    signupBox.style.display = 'none';
+    loginBox.style.display = 'block';
+});
 
-if (showForgot) {
-    showForgot.onclick = (e) => {
-        e.preventDefault();
-        loginBox.style.display = 'none';
-        forgotBox.style.display = 'block';
-    };
-}
+showForgot && (showForgot.onclick = (e) => {
+    e.preventDefault();
+    loginBox.style.display = 'none';
+    forgotBox.style.display = 'block';
+});
 
-if (backLogin) {
-    backLogin.onclick = (e) => {
-        e.preventDefault();
-        forgotBox.style.display = 'none';
-        loginBox.style.display = 'block';
-    };
-}
+backLogin && (backLogin.onclick = (e) => {
+    e.preventDefault();
+    forgotBox.style.display = 'none';
+    loginBox.style.display = 'block';
+});
 
 // ================= AUTH CHECK =================
 function checkAuth() {
@@ -65,48 +58,38 @@ function checkAuth() {
         return;
     }
 
-    // ✅ Keep token
     token = storedToken;
 
-    // ✅ Show dashboard
     authContainer.style.display = "none";
     appContainer.style.display = "block";
 
-    // ✅ Load data (no validation here)
     loadExpenses();
 }
-// ================= LOGIN =================
-    loginForm && (loginForm.onsubmit = async (e) => {
-    e.preventDefault();
 
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+// ================= LOGIN =================
+loginForm && (loginForm.onsubmit = async (e) => {
+    e.preventDefault();
 
     try {
         const res = await fetch(`${BASE_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+            })
         });
 
         const data = await res.json();
         console.log("LOGIN RESPONSE:", data);
 
         if (res.ok && data.token) {
-            // ✅ FORCE SAVE
-            window.localStorage.setItem('token', data.token);
-
-            // ✅ VERIFY immediately
-            console.log("TOKEN AFTER SAVE:", window.localStorage.getItem('token'));
-
+            localStorage.setItem('token', data.token);
             token = data.token;
 
-            // ✅ move to dashboard
-            authContainer.style.display = "none";
-            appContainer.style.display = "block";
+            console.log("TOKEN SAVED:", localStorage.getItem('token'));
 
-            loadExpenses();
-
+            checkAuth();
         } else {
             alert(data.message || "Login failed");
         }
@@ -118,41 +101,39 @@ function checkAuth() {
 });
 
 // ================= SIGNUP =================
-if (signupForm) {
-    signupForm.onsubmit = async (e) => {
-        e.preventDefault();
+signupForm && (signupForm.onsubmit = async (e) => {
+    e.preventDefault();
 
-        const name = document.getElementById('signup-name').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
+    try {
+        const res = await fetch(`${BASE_URL}/auth/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: document.getElementById('signup-name').value,
+                email: document.getElementById('signup-email').value,
+                password: document.getElementById('signup-password').value
+            })
+        });
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password })
-            });
+        const data = await res.json();
 
-            const data = await res.json();
+        if (res.ok) {
+            message.textContent = "Signup successful! Now login.";
+            message.style.color = "green";
 
-            if (res.ok) {
-                message.textContent = "Signup successful! Now login.";
-                message.style.color = "green";
-
-                signupBox.style.display = 'none';
-                loginBox.style.display = 'block';
-            } else {
-                message.textContent = data.message || "Signup failed";
-                message.style.color = "red";
-            }
-
-        } catch (err) {
-            console.log(err);
-            message.textContent = "Server error";
+            signupBox.style.display = 'none';
+            loginBox.style.display = 'block';
+        } else {
+            message.textContent = data.message || "Signup failed";
             message.style.color = "red";
         }
-    };
-}
+
+    } catch (err) {
+        console.log(err);
+        message.textContent = "Server error";
+        message.style.color = "red";
+    }
+});
 
 // ================= LOAD EXPENSES =================
 async function loadExpenses() {
@@ -162,13 +143,6 @@ async function loadExpenses() {
                 "Authorization": `Bearer ${token}`
             }
         });
-
-        if (res.status === 401) {
-            localStorage.removeItem('token');
-            token = null;
-            checkAuth();
-            return;
-        }
 
         const data = await res.json();
 
@@ -232,51 +206,48 @@ document.addEventListener("click", async (e) => {
 });
 
 // ================= ADD EXPENSE =================
-if (form) {
-    form.onsubmit = async (e) => {
-        e.preventDefault();
+form && (form.onsubmit = async (e) => {
+    e.preventDefault();
 
-        const description = document.getElementById('desc').value;
-        const amount = document.getElementById('amount').value;
-        const category = document.getElementById('category').value;
+    try {
+        const res = await fetch(`${BASE_URL}/expenses`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                description: document.getElementById('desc').value,
+                amount: document.getElementById('amount').value,
+                category: document.getElementById('category').value
+            })
+        });
 
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ description, amount, category })
-            });
+        if (res.ok) {
+            message.textContent = "Expense added!";
+            message.style.color = "green";
 
-            if (res.ok) {
-                message.textContent = "Expense added!";
-                message.style.color = "green";
-
-                form.reset();
-                loadExpenses();
-            } else {
-                message.textContent = "Failed to add expense";
-                message.style.color = "red";
-            }
-
-        } catch (err) {
-            console.log(err);
-            message.textContent = "Server error";
+            form.reset();
+            loadExpenses();
+        } else {
+            message.textContent = "Failed to add expense";
             message.style.color = "red";
         }
-    };
-}
+
+    } catch (err) {
+        console.log(err);
+        message.textContent = "Server error";
+        message.style.color = "red";
+    }
+});
 
 // ================= LOGOUT =================
-if (logoutBtn) {
-    logoutBtn.onclick = () => {
-        localStorage.removeItem('token');
-        token = null;
-        checkAuth();
-    };
-}
+logoutBtn && (logoutBtn.onclick = () => {
+    localStorage.removeItem('token');
+    token = null;
+    checkAuth();
+});
 
 checkAuth();
-})
+
+});
