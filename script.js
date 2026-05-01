@@ -17,7 +17,7 @@ const appContainer = document.getElementById('app');
 
 const logoutBtn = document.getElementById('logout-btn');
 const form = document.getElementById('form');
-const message = document.getElementById('message');
+const message = document.getElementById('message') || { textContent: "", style: {} };
 
 const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
