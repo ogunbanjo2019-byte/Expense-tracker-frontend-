@@ -92,15 +92,14 @@ if (loginForm) {
 
             const data = await res.json();
 
-            if (res.ok) {
-                localStorage.setItem('token', data.token);
+           if (res.ok) {
+               localStorage.setItem('token', data.token); // ✅ SAVE
                 token = data.token;
 
-                message.textContent = "Login successful!";
-                message.style.color = "green";
+                console.log("TOKEN SAVED:", data.token);
 
-                checkAuth();
-            } else {
+            checkAuth(); // move to dashboard
+            }else {
                 message.textContent = data.message || "Login failed";
                 message.style.color = "red";
             }
