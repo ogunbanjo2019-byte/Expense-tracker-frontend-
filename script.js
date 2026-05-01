@@ -215,6 +215,7 @@ document.addEventListener("click", async (e) => {
 });
 
 // ================= ADD EXPENSE =================
+// ================= ADD EXPENSE =================
 form && (form.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -232,6 +233,10 @@ form && (form.onsubmit = async (e) => {
             })
         });
 
+        // ✅ PUT IT HERE (inside try block)
+        const data = await res.json();
+        console.log("ADD RESPONSE:", res.status, data);
+
         if (res.ok) {
             message.textContent = "Expense added!";
             message.style.color = "green";
@@ -239,7 +244,7 @@ form && (form.onsubmit = async (e) => {
             form.reset();
             loadExpenses();
         } else {
-            message.textContent = "Failed to add expense";
+            message.textContent = data.message || "Failed to add expense";
             message.style.color = "red";
         }
 
@@ -249,7 +254,6 @@ form && (form.onsubmit = async (e) => {
         message.style.color = "red";
     }
 });
-
 // ================= LOGOUT =================
 logoutBtn && (logoutBtn.onclick = () => {
     localStorage.removeItem('token');
