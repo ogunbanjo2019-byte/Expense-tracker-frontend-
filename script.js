@@ -51,38 +51,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================= AUTH CHECK =================
     async function checkAuth() {
-        const storedToken = localStorage.getItem('token');
+    const storedToken = localStorage.getItem('token');
 
-        if (!storedToken) {
-            authContainer.style.display = "block";
-            appContainer.style.display = "none";
-            return;
-        }
-
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                headers: {
-                    "Authorization": `Bearer ${storedToken}`
-                }
-            });
-
-            if (!res.ok) throw new Error();
-
-            token = storedToken;
-
-            authContainer.style.display = "none";
-            appContainer.style.display = "block";
-
-            loadExpenses();
-
-        } catch {
-            localStorage.removeItem('token');
-            token = null;
-
-            authContainer.style.display = "block";
-            appContainer.style.display = "none";
-        }
+    // ❌ If no token → DO NOTHING
+    if (!storedToken) {
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
+        return;
     }
+
+    // ✅ Only verify AFTER login exists
+    try {
+        const res = await fetch(`${BASE_URL}/expenses`, {
+            headers: {
+                "Authorization": `Bearer ${storedToken}`
+            }
+        });
+
+        if (!res.ok) throw new Error();
+
+        token = storedToken;
+
+        authContainer.style.display = "none";
+        appContainer.style.display = "block";
+
+        loadExpenses();
+
+    } catch {
+        localStorage.removeItem('token');
+        token = null;
+
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
+    }
+}
 
     // ================= LOGIN =================
     loginForm && (loginForm.onsubmit = async (e) => {
