@@ -80,16 +80,25 @@ loginForm && (loginForm.onsubmit = async (e) => {
             })
         });
 
+        // ✅ ALWAYS define data BEFORE using it
         const data = await res.json();
+
         console.log("LOGIN RESPONSE:", data);
 
         if (res.ok && data.token) {
+
             localStorage.setItem('token', data.token);
             token = data.token;
 
             console.log("TOKEN SAVED:", localStorage.getItem('token'));
 
-            checkAuth();
+            // ✅ MOVE TO DASHBOARD
+            authContainer.style.display = "none";
+            appContainer.style.display = "block";
+
+            // ✅ LOAD DATA AFTER SUCCESS
+            loadExpenses();
+
         } else {
             alert(data.message || "Login failed");
         }
@@ -98,7 +107,6 @@ loginForm && (loginForm.onsubmit = async (e) => {
         console.log(err);
         alert("Server error");
     }
-    console.log("LOGIN RESPONSE:", data);
 });
 
 // ================= SIGNUP =================
