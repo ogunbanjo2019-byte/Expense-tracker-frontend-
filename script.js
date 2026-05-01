@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch {
             alert("Server is waking up... try again");
+            console.log("LOGIN RESPONSE:", data);g
         }
     });
 
