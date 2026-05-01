@@ -56,19 +56,22 @@ if (backLogin) {
 }
 
 // ================= AUTH CHECK =================
-function checkAuth() {
-    token = localStorage.getItem('token');
+async function checkAuth() {
+    const storedToken = localStorage.getItem('token');
 
-    if (token) {
-        authContainer.style.display = "none";
-        appContainer.style.display = "block";
-        loadExpenses();
-    } else {
+    if (!storedToken) {
         authContainer.style.display = "block";
         appContainer.style.display = "none";
+        return;
     }
-}
 
+    token = storedToken;
+
+    authContainer.style.display = "none";
+    appContainer.style.display = "block";
+
+    loadExpenses();
+}
 // ================= LOGIN =================
 if (loginForm) {
     loginForm.onsubmit = async (e) => {
