@@ -7,6 +7,7 @@ const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 const showForgot = document.getElementById('show-forgot');
 const backLogin = document.getElementById('back-login');
+const message = document.getElementById('message') || { textContent: "", style: {} };
 
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
