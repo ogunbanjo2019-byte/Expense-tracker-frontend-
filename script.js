@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
 const loginBox = document.getElementById('login-box');
 const signupBox = document.getElementById('signup-box');
 const forgotBox = document.getElementById('forgot-box');
-const emptyMsg = document.getElementById("empty-msg");
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 const showForgot = document.getElementById('show-forgot');
@@ -17,7 +16,7 @@ const appContainer = document.getElementById('app');
 
 const logoutBtn = document.getElementById('logout-btn');
 const form = document.getElementById('form');
-const message = document.getElementById('message') || { textContent: "", style: {} };
+const emptyMsg = document.getElementById("empty-msg") || { style: {} };
 
 const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
@@ -157,7 +156,6 @@ async function loadExpenses() {
         });
 
         const data = await res.json();
-        console.log("FETCH RESPONSE:", data);
 
         const list = document.getElementById('list');
         const total = document.getElementById('total');
