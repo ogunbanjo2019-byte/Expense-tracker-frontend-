@@ -98,6 +98,7 @@ loginForm && (loginForm.onsubmit = async (e) => {
         console.log(err);
         alert("Server error");
     }
+    console.log("LOGIN RESPONSE:", data);
 });
 
 // ================= SIGNUP =================
