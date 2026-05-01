@@ -1,113 +1,152 @@
-const balanceDisplay = document.getElementById('total');
-const list = document.getElementById('list');
+const authContainer = document.getElementById('auth-container');
+const appContainer = document.getElementById('app');
+
+const loginBox = document.getElementById('login-box');
+const signupBox = document.getElementById('signup-box');
+
+const showSignup = document.getElementById('show-signup');
+const showLogin = document.getElementById('show-login');
+
+const loginForm = document.getElementById('login-form');
+const signupForm = document.getElementById('signup-form');
+
+const logoutBtn = document.getElementById('logout-btn');
+
 const form = document.getElementById('form');
-const descriptionInput = document.getElementById('desc');
-const amountInput = document.getElementById('amount');
-const categoryInput = document.getElementById('category');
+const list = document.getElementById('list');
+const total = document.getElementById('total');
 
-const API_URL = "https://my-expenses-tracker-9uhz.onrender.com/api/expenses";
+const desc = document.getElementById('desc');
+const amount = document.getElementById('amount');
+const category = document.getElementById('category');
 
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    console.log(data);
-  })
-  
-  .catch(err => console.error("Error:", err));
+const BASE_URL = "https://my-expenses-tracker-9uhz.onrender.com/api";
 
-const getExpenses = () => {
-    fetch(API_URL)
-        .then((response) => response.json())
-        .then((data) => {
-            list.innerHTML = '';
-            let total = 0;
-
-            for (let i = 0; i < data.length; i++) {
-                const expense = data[i];
-
-                const li = document.createElement('li');
-
-                const text = document.createElement('span');
-                text.innerText = expense.description + ' (' + expense.category + ')';
-
-                const amount = document.createElement('span');
-                amount.innerText = ' ₦' + expense.amount;
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.innerText = 'Delete';
-
-                deleteBtn.onclick = () => {
-                    deleteExpense(expense._id);
-                };
-
-                li.appendChild(text);
-                li.appendChild(amount);
-                li.appendChild(deleteBtn);
-
-                list.appendChild(li);
-
-                total = total + Number(expense.amount);
-            }
-
-            balanceDisplay.innerText = '₦' + total;
-        })
-        .catch((error) => {
-            console.log('Error loading expenses', error);
-        });
+let token = localStorage.getItem('token');
+showSignup.onclick = (e) => {
+    e.preventDefault();
+    loginBox.style.display = "none";
+    signupBox.style.display = "block";
 };
 
+showLogin.onclick = (e) => {
+    e.preventDefault();
+    signupBox.style.display = "none";
+    loginBox.style.display = "block";
+};
 
-const addExpense = (e) => {
+function checkAuth() {
+    if (token) {
+        authContainer.style.display = "none";
+        appContainer.style.display = "block";
+        getExpenses();
+    } else {
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
+    }
+}
+
+loginForm.onsubmit = async (e) => {
     e.preventDefault();
 
-    const description = descriptionInput.value;
-    const amount = amountInput.value;
-    const category = categoryInput.value;
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-    if (description === '' || amount === '') {
-        alert('Please enter description and amount');
-        return;
+    try {
+        const res = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            token = data.token;
+            localStorage.setItem("token", token);
+            checkAuth();
+        } else {
+            alert(data.message);
+        }
+
+    } catch (err) {
+        alert("Server waking up, try again...");
     }
+};
 
-    const expense = {
-        description: description,
-        amount: Number(amount),
-        category: category
-    };
+signupForm.onsubmit = async (e) => {
+    e.preventDefault();
 
-    fetch(API_URL, {
-        method: 'POST',
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    try {
+        const res = await fetch(`${BASE_URL}/auth/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("Signup successful! Login now.");
+            signupBox.style.display = "none";
+            loginBox.style.display = "block";
+        } else {
+            alert(data.message);
+        }
+
+    } catch {
+        alert("Server waking up...");
+    }
+};
+
+logoutBtn.onclick = () => {
+    localStorage.removeItem("token");
+    token = null;
+    checkAuth();
+};
+
+async function getExpenses() {
+    const res = await fetch(`${BASE_URL}/expenses`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    list.innerHTML = "";
+    let sum = 0;
+
+    data.forEach(exp => {
+        const li = document.createElement("li");
+        li.innerHTML = `${exp.description} - ₦${exp.amount}`;
+        list.appendChild(li);
+        sum += exp.amount;
+    });
+
+    total.innerText = sum;
+}
+
+form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    await fetch(`${BASE_URL}/expenses`, {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(expense)
-    })
-    .then(() => {
-        descriptionInput.value = '';
-        amountInput.value = '';
-        categoryInput.value = '';
-
-        getExpenses();
-    })
-    .catch((error) => {
-        console.log('Error adding expense', error);
+        body: JSON.stringify({
+            description: desc.value,
+            amount: amount.value,
+            category: category.value
+        })
     });
+
+    form.reset();
+    getExpenses();
 };
 
-
-const deleteExpense = (id) => {
-    fetch(API_URL + '/' + id, {
-        method: 'DELETE'
-    })
-    .then(() => {
-        getExpenses();
-    })
-    .catch((error) => {
-        console.log('Error deleting expense', error);
-    });
-};
-
-
-form.addEventListener('submit', addExpense);
-
-getExpenses();
+checkAuth();

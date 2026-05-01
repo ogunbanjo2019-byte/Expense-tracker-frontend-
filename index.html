@@ -3,67 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Expense Tracker</title>
+    <title>Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="auth-container">
+        <div id="login-box" class="auth-box">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input 
+                    type="email" 
+                    id="login-email" 
+                    placeholder="Enter your email" 
+                    required
+                >
 
-    <div id="app">
-        <header>
-            <h1>The Tracker</h1>
-        </header>
-        <div id="total-box">
-            <h3>Total Balance</h3>
-            <h1 id="total">₦ 0</h1>
-        </div>
+                <input 
+                    type="password" 
+                    id="login-password" 
+                    placeholder="Enter your password" 
+                    required
+                >
 
-        <div id="form-box">
-            <h3>Add New Expense</h3>
-
-            <form id="form">
-                <div class="input-box">
-                    <label>Description</label>
-                    <input 
-                        type="text" 
-                        id="desc" 
-                        placeholder="What did you care for?" 
-                        required
-                    >
-                </div>
-
-                <div class="input-box">
-                    <label>Amount</label>
-                    <input 
-                        type="number" 
-                        id="amount" 
-                        placeholder="Enter amount" 
-                        required
-                    >
-                </div>
-
-                <div class="input-box">
-                    <label>Category</label>
-                    <select id="category" required>
-                        <option value="">Select category</option>
-                        <option>Food</option>
-                        <option>Transport</option>
-                        <option>Entertainment</option>
-                        <option>Relaxation</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-
-                <button>Add Expense</button>
+                <button type="submit">Login</button>
             </form>
+
+            <p>
+                <a href="#" id="show-signup">Sign Up</a>
+            </p>
         </div>
 
-        <div id="history-box">
-            <h3>Expense History</h3>
-            <ul id="list"></ul>
+        <div id="signup-box" class="auth-box" style="display: none;">
+            <h2>Create Account</h2>
+            <form id="signup-form">
+                <input 
+                    type="text" 
+                    id="signup-name" 
+                    placeholder="Full Name" 
+                    required
+                >
+
+                <input 
+                    type="email" 
+                    id="signup-email" 
+                    placeholder="Email Address" 
+                    required
+                >
+
+                <input 
+                    type="password" 
+                    id="signup-password" 
+                    placeholder="Create Password" 
+                    required
+                >
+
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <p>
+                Already have an account?
+                <a href="#" id="show-login">Login</a>
+            </p>
         </div>
 
     </div>
+    <div id="app" style="display: none;">
 
+        <h1>Expense Tracker</h1>
+        <button id="logout-btn">Logout</button>
+        <h2>
+            Total Balance: ₦ <span id="total">0</span>
+        </h2>
+        <form id="form">
+
+            <input 
+                type="text" 
+                id="desc" 
+                placeholder="What did you spend on?" 
+                required
+            >
+
+            <input 
+                type="number" 
+                id="amount" 
+                placeholder="Enter amount" 
+                required
+            >
+
+            <select id="category">
+                <option value="">Select Category</option>
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Entertainment</option>
+                <option>Other</option>
+            </select>
+
+            <button type="submit">Add Expense</button>
+        </form>
+        <ul id="list"></ul>
+
+    </div>
     <script src="script.js"></script>
+
 </body>
 </html>
