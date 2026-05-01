@@ -76,41 +76,46 @@ function checkAuth() {
     loadExpenses();
 }
 // ================= LOGIN =================
-if (loginForm) {
-    loginForm.onsubmit = async (e) => {
-        e.preventDefault();
+    loginForm && (loginForm.onsubmit = async (e) => {
+    e.preventDefault();
 
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+    try {
+        const res = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-            const data = await res.json();
+        const data = await res.json();
+        console.log("LOGIN RESPONSE:", data);
 
-           if (res.ok) {
-               localStorage.setItem('token', data.token); // ✅ SAVE
-                token = data.token;
+        if (res.ok && data.token) {
+            // ✅ FORCE SAVE
+            window.localStorage.setItem('token', data.token);
 
-                console.log("TOKEN SAVED:", data.token);
+            // ✅ VERIFY immediately
+            console.log("TOKEN AFTER SAVE:", window.localStorage.getItem('token'));
 
-            checkAuth(); // move to dashboard
-            }else {
-                message.textContent = data.message || "Login failed";
-                message.style.color = "red";
-            }
+            token = data.token;
 
-        } catch (err) {
-            console.log(err);
-            message.textContent = "Server error";
-            message.style.color = "red";
+            // ✅ move to dashboard
+            authContainer.style.display = "none";
+            appContainer.style.display = "block";
+
+            loadExpenses();
+
+        } else {
+            alert(data.message || "Login failed");
         }
-    };
-}
+
+    } catch (err) {
+        console.log(err);
+        alert("Server error");
+    }
+});
 
 // ================= SIGNUP =================
 if (signupForm) {
