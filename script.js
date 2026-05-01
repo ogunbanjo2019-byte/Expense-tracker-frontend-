@@ -63,9 +63,9 @@ function checkAuth() {
     authContainer.style.display = "none";
     appContainer.style.display = "block";
 
+    // 🔥 THIS IS IMPORTANT
     loadExpenses();
 }
-
 // ================= LOGIN =================
 loginForm && (loginForm.onsubmit = async (e) => {
     e.preventDefault();
@@ -147,7 +147,6 @@ signupForm && (signupForm.onsubmit = async (e) => {
 // ================= LOAD EXPENSES =================
 // ================= LOAD EXPENSES =================
 async function loadExpenses() {
-    console.log("LOADING EXPENSES...");
 
     try {
         const res = await fetch(`${BASE_URL}/expenses`, {
