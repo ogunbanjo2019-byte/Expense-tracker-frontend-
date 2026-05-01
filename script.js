@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const loginBox = document.getElementById('login-box');
 const signupBox = document.getElementById('signup-box');
 const forgotBox = document.getElementById('forgot-box');
-
+const emptyMsg = document.getElementById("empty-msg");
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 const showForgot = document.getElementById('show-forgot');
@@ -161,15 +161,20 @@ async function loadExpenses() {
 
         const list = document.getElementById('list');
         const total = document.getElementById('total');
+        const emptyMsg = document.getElementById('empty-msg');
 
         list.innerHTML = "";
         let sum = 0;
 
+        // Show message if no data
         if (!Array.isArray(data) || data.length === 0) {
-            list.innerHTML = "<p>No expenses yet</p>";
+            emptyMsg.style.display = "block";
             total.textContent = 0;
             return;
         }
+
+        // Hide message if data exists
+        emptyMsg.style.display = "none";
 
         data.forEach(exp => {
             sum += Number(exp.amount);
