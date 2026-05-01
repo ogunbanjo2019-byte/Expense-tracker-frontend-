@@ -145,7 +145,10 @@ signupForm && (signupForm.onsubmit = async (e) => {
 });
 
 // ================= LOAD EXPENSES =================
+// ================= LOAD EXPENSES =================
 async function loadExpenses() {
+    console.log("LOADING EXPENSES...");
+
     try {
         const res = await fetch(`${BASE_URL}/expenses`, {
             headers: {
@@ -154,6 +157,7 @@ async function loadExpenses() {
         });
 
         const data = await res.json();
+        console.log("FETCH RESPONSE:", data);
 
         const list = document.getElementById('list');
         const total = document.getElementById('total');
@@ -161,7 +165,11 @@ async function loadExpenses() {
         list.innerHTML = "";
         let sum = 0;
 
-        if (!Array.isArray(data)) return;
+        if (!Array.isArray(data) || data.length === 0) {
+            list.innerHTML = "<p>No expenses yet</p>";
+            total.textContent = 0;
+            return;
+        }
 
         data.forEach(exp => {
             sum += Number(exp.amount);
@@ -181,7 +189,6 @@ async function loadExpenses() {
         console.log(err);
     }
 }
-
 // ================= DELETE =================
 document.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("delete-btn")) return;
