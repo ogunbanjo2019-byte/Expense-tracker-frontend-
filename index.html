@@ -7,21 +7,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div id="auth-container">
+
     <div id="login-box">
         <h2>Login</h2>
+
         <form id="login-form">
             <input type="email" id="login-email" placeholder="Enter your email" required>
             <input type="password" id="login-password" placeholder="Enter your password" required>
             <button type="submit">Login</button>
         </form>
 
-        <p>
-            Don't have an account?
-            <a href="#" id="show-signup">Sign Up</a>
-        </p>
+        <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+        <p><a href="#" id="show-forgot">Forgot Password?</a></p>
     </div>
-    <div id="signup-box">
+
+    <div id="signup-box" style="display:none;">
         <h2>Create Account</h2>
 
         <form id="signup-form">
@@ -31,17 +33,25 @@
             <button type="submit">Sign Up</button>
         </form>
 
-        <p>
-            Already have an account?
-            <a href="#" id="show-login">Login</a>
-        </p>
+        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+    </div>
+
+    <div id="forgot-box" style="display:none;">
+        <h2>Reset Password</h2>
+
+        <form id="forgot-form">
+            <input type="email" id="forgot-email" placeholder="Enter your email" required>
+            <button type="submit">Send Reset Link</button>
+        </form>
+
+        <p><a href="#" id="back-login">Back to Login</a></p>
     </div>
 
 </div>
 
 <div id="app" style="display:none;">
+
     <h1>Expense Tracker</h1>
-    <button id="logout-btn">Logout</button>
 
     <h2>Total: ₦ <span id="total">0</span></h2>
 
@@ -60,7 +70,12 @@
         <button type="submit">Add Expense</button>
     </form>
 
+    <p id="message"></p>
+
     <ul id="list"></ul>
+
+    <button id="logout-btn">Logout</button>
+
 </div>
 
 <script src="script.js"></script>
