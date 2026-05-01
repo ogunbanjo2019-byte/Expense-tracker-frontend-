@@ -1,4 +1,4 @@
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
@@ -18,8 +18,7 @@
 
     const logoutBtn = document.getElementById('logout-btn');
     const form = document.getElementById('form');
-
-    const message = document.getElementById('message'); // ✅ IMPORTANT
+    const message = document.getElementById('message');
 
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
@@ -51,38 +50,39 @@
     });
 
     // ================= AUTH CHECK =================
- async function checkAuth() {
-    if (!token) {
-        authContainer.style.display = "block";
-        appContainer.style.display = "none";
-        return;
-    }
+    async function checkAuth() {
+        const storedToken = localStorage.getItem('token');
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        if (!res.ok) {
-            throw new Error("Invalid token");
+        if (!storedToken) {
+            authContainer.style.display = "block";
+            appContainer.style.display = "none";
+            return;
         }
 
-        authContainer.style.display = "none";
-        appContainer.style.display = "block";
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                headers: {
+                    "Authorization": `Bearer ${storedToken}`
+                }
+            });
 
-        loadExpenses();
+            if (!res.ok) throw new Error();
 
-    } catch {
-        // ❌ token is bad → force logout
-        localStorage.removeItem('token');
-        token = null;
+            token = storedToken;
 
-        authContainer.style.display = "block";
-        appContainer.style.display = "none";
+            authContainer.style.display = "none";
+            appContainer.style.display = "block";
+
+            loadExpenses();
+
+        } catch {
+            localStorage.removeItem('token');
+            token = null;
+
+            authContainer.style.display = "block";
+            appContainer.style.display = "none";
+        }
     }
-}
 
     // ================= LOGIN =================
     loginForm && (loginForm.onsubmit = async (e) => {
@@ -101,8 +101,8 @@
             const data = await res.json();
 
             if (res.ok) {
+                localStorage.setItem('token', data.token);
                 token = data.token;
-                localStorage.setItem('token', token);
                 checkAuth();
             } else {
                 alert(data.message || "Invalid login");
@@ -143,27 +143,6 @@
         }
     });
 
-    // ================= FORGOT =================
-    forgotForm && (forgotForm.onsubmit = async (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById('forgot-email').value;
-
-        try {
-            const res = await fetch(`${BASE_URL}/auth/forgot`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            });
-
-            const data = await res.json();
-            alert(data.message || "Request sent");
-
-        } catch {
-            alert("Server error");
-        }
-    });
-
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
         try {
@@ -189,9 +168,8 @@
                 const li = document.createElement('li');
                 li.innerHTML = `
                     ${exp.description} - ₦${exp.amount}
-                    <button onclick="deleteExpense('${exp._id}')">X</button>
+                    <button data-id="${exp._id}" class="delete-btn">X</button>
                 `;
-
                 list.appendChild(li);
             });
 
@@ -202,7 +180,38 @@
         }
     }
 
-    // ================= ADD EXPENSE =================
+    // ================= DELETE =================
+    document.addEventListener("click", async (e) => {
+        if (!e.target.classList.contains("delete-btn")) return;
+
+        const id = e.target.getAttribute("data-id");
+
+        try {
+            const res = await fetch(`${BASE_URL}/expenses/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                message.textContent = data.message || "Deleted successfully";
+                message.style.color = "green";
+                loadExpenses();
+            } else {
+                message.textContent = data.message || "Delete failed";
+                message.style.color = "red";
+            }
+
+        } catch {
+            message.textContent = "Server error";
+            message.style.color = "red";
+        }
+    });
+
+    // ================= ADD =================
     form && (form.onsubmit = async (e) => {
         e.preventDefault();
 
@@ -223,11 +232,8 @@
             if (res.ok) {
                 message.textContent = "Expense added!";
                 message.style.color = "green";
-
                 form.reset();
                 loadExpenses();
-
-                setTimeout(() => message.textContent = "", 3000);
             }
 
         } catch {
@@ -245,42 +251,3 @@
 
     checkAuth();
 });
-
-// ================= DELETE =================
-async function deleteExpense(id) {
-    const message = document.getElementById('message');
-
-    if (!token) {
-        message.textContent = "You are not logged in";
-        message.style.color = "red";
-        return;
-    }
-
-    try {
-        const res = await fetch(`${BASE_URL}/expenses/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            message.textContent = data.message || "Deleted successfully";
-            message.style.color = "green";
-
-            loadExpenses(); // ✅ now accessible
-
-            setTimeout(() => message.textContent = "", 3000);
-
-        } else {
-            message.textContent = data.message || "Delete failed";
-            message.style.color = "red";
-        }
-
-    } catch {
-        message.textContent = "Server error";
-        message.style.color = "red";
-    }
-}
