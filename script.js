@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
@@ -21,9 +22,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById('logout-btn');
     const form = document.getElementById('form');
 
-const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
+    const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem('token');
+    let inactivityTimer;
+
+    function startInactivityTimer() {
+        resetInactivityTimer();
+
+        ["click", "mousemove", "keydown", "scroll"].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer);
+        });
+    }
+
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+
+        inactivityTimer = setTimeout(() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("name");
+
+            alert("Logged out due to inactivity");
+
+            location.reload();
+        }, 3000); 
+    }
 
     function showMessage(element, text, color = "red") {
         if (!element) return;
@@ -78,40 +101,43 @@ const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
             welcomeScreen.style.display = "none";
             appContainer.style.display = "block";
             loadExpenses();
+
+            startInactivityTimer();
+
         }, 2000);
     }
 
     async function checkAuth() {
-    const storedToken = localStorage.getItem('token');
+        const storedToken = localStorage.getItem('token');
 
-    if (!storedToken) {
-        authContainer.style.display = "block";
-        appContainer.style.display = "none";
-        return;
+        if (!storedToken) {
+            authContainer.style.display = "block";
+            appContainer.style.display = "none";
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BASE_URL}/auth/verify`, {
+                headers: {
+                    "Authorization": `Bearer ${storedToken}`
+                }
+            });
+
+            if (!res.ok) throw new Error();
+
+            token = storedToken;
+
+            authContainer.style.display = "none";
+            appContainer.style.display = "none";
+
+            showWelcomeScreen();
+
+        } catch {
+            localStorage.removeItem('token');
+            authContainer.style.display = "block";
+            appContainer.style.display = "none";
+        }
     }
-
-    try {
-        const res = await fetch(`${BASE_URL}/auth/verify`, {
-            headers: {
-                "Authorization": `Bearer ${storedToken}`
-            }
-        });
-
-        if (!res.ok) throw new Error();
-
-        token = storedToken;
-
-        authContainer.style.display = "none";
-        appContainer.style.display = "none";
-
-        showWelcomeScreen();
-
-    } catch {
-        localStorage.removeItem('token');
-        authContainer.style.display = "block";
-        appContainer.style.display = "none";
-    }
-}
 
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -178,124 +204,6 @@ const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
         } catch (err) {
             console.log(err);
             showMessage(signupMessage, "Server error");
-        }
-    });
-
-    forgotForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        try {
-            const res = await fetch(`${BASE_URL}/auth/reset-password`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: document.getElementById("forgot-email").value,
-                    newPassword: document.getElementById("new-password").value
-                })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                showMessage(forgotMessage, "Password reset successful!", "green");
-                switchView(loginBox);
-            } else {
-                showMessage(forgotMessage, data.message || "Reset failed");
-            }
-
-        } catch (err) {
-            console.log(err);
-            showMessage(forgotMessage, "Server error");
-        }
-    });
-
-    async function loadExpenses() {
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-
-            const data = await res.json();
-
-            const list = document.getElementById('list');
-            const total = document.getElementById('total');
-            const emptyMsg = document.getElementById('empty-msg');
-
-            list.innerHTML = "";
-            let sum = 0;
-
-            if (!Array.isArray(data) || data.length === 0) {
-                emptyMsg.style.display = "block";
-                total.textContent = 0;
-                return;
-            }
-
-            emptyMsg.style.display = "none";
-
-            data.forEach(exp => {
-                sum += Number(exp.amount);
-
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${exp.description} - ₦${exp.amount}
-                    <button data-id="${exp._id}" class="delete-btn">X</button>
-                `;
-
-                list.appendChild(li);
-            });
-
-            total.textContent = sum;
-
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    document.addEventListener("click", async (e) => {
-        if (!e.target.classList.contains("delete-btn")) return;
-
-        const id = e.target.getAttribute("data-id");
-
-        try {
-            const res = await fetch(`${BASE_URL}/expenses/${id}`, {
-                method: "DELETE",
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-
-            if (res.ok) {
-                e.target.parentElement.remove();
-                loadExpenses();
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-    });
-
-    form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    description: document.getElementById('desc').value,
-                    amount: document.getElementById('amount').value,
-                    category: document.getElementById('category').value
-                })
-            });
-
-            if (res.ok) {
-                form.reset();
-                loadExpenses();
-            }
-
-        } catch (err) {
-            console.log(err);
         }
     });
 
