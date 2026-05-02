@@ -1,24 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
+
 const loginBox = document.getElementById('login-box');
 const signupBox = document.getElementById('signup-box');
-const forgotBox = document.getElementById('forgot-box');
+
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
-const showForgot = document.getElementById('show-forgot');
-const backLogin = document.getElementById('back-login');
+
 const message = document.getElementById('message') || { textContent: "", style: {} };
+
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
+
 const authContainer = document.getElementById('auth-container');
 const appContainer = document.getElementById('app');
+
 const logoutBtn = document.getElementById('logout-btn');
 const form = document.getElementById('form');
-const emptyMsg = document.getElementById("empty-msg") || { style: {} };
 
 const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
 let token = localStorage.getItem('token');
 
+
+// ================= SWITCH =================
 showSignup && (showSignup.onclick = (e) => {
     e.preventDefault();
     loginBox.style.display = 'none';
@@ -31,18 +35,8 @@ showLogin && (showLogin.onclick = (e) => {
     loginBox.style.display = 'block';
 });
 
-showForgot && (showForgot.onclick = (e) => {
-    e.preventDefault();
-    loginBox.style.display = 'none';
-    forgotBox.style.display = 'block';
-});
 
-backLogin && (backLogin.onclick = (e) => {
-    e.preventDefault();
-    forgotBox.style.display = 'none';
-    loginBox.style.display = 'block';
-});
-
+// ================= AUTH CHECK =================
 function checkAuth() {
     const storedToken = localStorage.getItem('token');
 
@@ -51,13 +45,30 @@ function checkAuth() {
         appContainer.style.display = "none";
         return;
     }
+
     token = storedToken;
 
     authContainer.style.display = "none";
     appContainer.style.display = "block";
+
+    // 🔥 SHOW WELCOME
+    const welcome = document.getElementById("welcome");
+    const name = localStorage.getItem("name");
+
+    if (name && welcome) {
+        welcome.textContent = `Welcome, ${name}`;
+
+        // animation
+        setTimeout(() => {
+            welcome.classList.add("welcome-show");
+        }, 100);
+    }
+
     loadExpenses();
 }
 
+
+// ================= LOGIN =================
 loginForm && (loginForm.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -72,14 +83,21 @@ loginForm && (loginForm.onsubmit = async (e) => {
         });
 
         const data = await res.json();
+        console.log("LOGIN:", data);
 
         if (res.ok && data.token) {
 
             localStorage.setItem('token', data.token);
+
+            // 🔥 SAVE NAME
+            localStorage.setItem("name", data.user.name);
+
             token = data.token;
+
             authContainer.style.display = "none";
             appContainer.style.display = "block";
-            loadExpenses();
+
+            checkAuth(); // 🔥 ensures welcome shows properly
 
         } else {
             alert(data.message || "Login failed");
@@ -91,6 +109,8 @@ loginForm && (loginForm.onsubmit = async (e) => {
     }
 });
 
+
+// ================= SIGNUP =================
 signupForm && (signupForm.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -125,6 +145,8 @@ signupForm && (signupForm.onsubmit = async (e) => {
     }
 });
 
+
+// ================= LOAD EXPENSES =================
 async function loadExpenses() {
 
     try {
@@ -142,6 +164,7 @@ async function loadExpenses() {
 
         list.innerHTML = "";
         let sum = 0;
+
         if (!Array.isArray(data) || data.length === 0) {
             emptyMsg.style.display = "block";
             total.textContent = 0;
@@ -169,12 +192,12 @@ async function loadExpenses() {
     }
 }
 
+
+// ================= DELETE =================
 document.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("delete-btn")) return;
 
     const id = e.target.getAttribute("data-id");
-
-    const message = document.getElementById("message") || { textContent: "", style: {} };
 
     try {
         const res = await fetch(`${BASE_URL}/expenses/${id}`, {
@@ -187,12 +210,11 @@ document.addEventListener("click", async (e) => {
         const data = await res.json();
 
         if (res.ok) {
-
             message.textContent = "Deleted successfully";
             message.style.color = "green";
+
             e.target.parentElement.remove();
             loadExpenses();
-
         } else {
             message.textContent = data.message || "Delete failed";
             message.style.color = "red";
@@ -203,11 +225,14 @@ document.addEventListener("click", async (e) => {
         message.textContent = "Server error";
         message.style.color = "red";
     }
+
     setTimeout(() => {
         message.textContent = "";
     }, 2000);
 });
 
+
+// ================= ADD EXPENSE =================
 form && (form.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -226,7 +251,6 @@ form && (form.onsubmit = async (e) => {
         });
 
         const data = await res.json();
-        console.log("ADD RESPONSE:", res.status, data);
 
         if (res.ok) {
             message.textContent = "Expense added!";
@@ -246,11 +270,15 @@ form && (form.onsubmit = async (e) => {
     }
 });
 
+
+// ================= LOGOUT =================
 logoutBtn && (logoutBtn.onclick = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('name'); // 🔥 important
     token = null;
     checkAuth();
 });
+
 
 checkAuth();
 

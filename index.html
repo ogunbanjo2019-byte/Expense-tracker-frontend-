@@ -8,8 +8,10 @@
 </head>
 <body>
 
+<!-- ================= AUTH SECTION ================= -->
 <div id="auth-container">
 
+    <!-- LOGIN -->
     <div id="login-box">
         <h2>Login</h2>
 
@@ -22,6 +24,7 @@
         <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
     </div>
 
+    <!-- SIGNUP -->
     <div id="signup-box" style="display:none;">
         <h2>Create Account</h2>
 
@@ -35,15 +38,20 @@
         <p>Already have an account? <a href="#" id="show-login">Login</a></p>
     </div>
 
-
 </div>
 
+
+<!-- ================= APP SECTION ================= -->
 <div id="app" style="display:none;">
+
+    <!-- 🔥 WELCOME MESSAGE -->
+    <h2 id="welcome"></h2>
 
     <h1>Expense Tracker</h1>
 
     <h2>Total: ₦ <span id="total">0</span></h2>
 
+    <!-- ADD EXPENSE FORM -->
     <form id="form">
         <input type="text" id="desc" placeholder="What did you spend on?" required>
         <input type="number" id="amount" placeholder="Enter amount" required>
@@ -59,12 +67,13 @@
         <button type="submit">Add Expense</button>
     </form>
 
+    <!-- EMPTY MESSAGE -->
+    <p id="empty-msg">No expenses yet</p>
 
-<p id="empty-msg">No expenses yet</p>
-    
-
+    <!-- EXPENSE LIST -->
     <ul id="list"></ul>
 
+    <!-- LOGOUT -->
     <button id="logout-btn">Logout</button>
 
 </div>
