@@ -81,14 +81,23 @@ const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
         }, 2000);
     }
 
-    function checkAuth() {
-        const storedToken = localStorage.getItem('token');
+    async function checkAuth() {
+    const storedToken = localStorage.getItem('token');
 
-        if (!storedToken) {
-            authContainer.style.display = "block";
-            appContainer.style.display = "none";
-            return;
-        }
+    if (!storedToken) {
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${BASE_URL}/auth/verify`, {
+            headers: {
+                "Authorization": `Bearer ${storedToken}`
+            }
+        });
+
+        if (!res.ok) throw new Error();
 
         token = storedToken;
 
@@ -96,7 +105,13 @@ const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
         appContainer.style.display = "none";
 
         showWelcomeScreen();
+
+    } catch {
+        localStorage.removeItem('token');
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
     }
+}
 
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
