@@ -23,9 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById('logout-btn');
     const form = document.getElementById('form');
 
-    const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
-
-    const resetLink = `https://expense-tracker-frontend-delta-eight.vercel.app/reset.html?token=${resetToken}`;
+const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem('token');
 
