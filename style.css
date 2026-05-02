@@ -51,8 +51,8 @@ h1, h2 {
   width: 100%;
   height: 100vh;
 
-  background: #27ae60;
-  color: white;
+  background: #ffffff; /* white UI */
+  color: #27ae60;
 
   display: flex;
   justify-content: center;
@@ -62,13 +62,34 @@ h1, h2 {
   font-weight: bold;
 
   z-index: 9999;
-
-  animation: fadeIn 0.8s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* ================= 🔄 SPIN ANIMATION ================= */
+#welcome-text {
+  display: inline-block;
+
+  /* total ~2.8s animation */
+  animation: spin360 0.8s ease-out, settle 2s ease 0.8s forwards;
+}
+
+/* fast 360 spin */
+@keyframes spin360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* smooth finishing rotation */
+@keyframes settle {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(390deg);
+  }
 }
 
 /* ================= FORM ================= */
@@ -88,24 +109,30 @@ select {
   font-size: 14px;
 }
 
-/* ================= BUTTON ================= */
+/* ================= BUTTON (WHITE STYLE) ================= */
 button {
   width: 100%;
   padding: 12px;
-  background: #27ae60;
-  color: white;
-  border: none;
+
+  background: #ffffff;
+  color: #27ae60;
+
+  border: 2px solid #27ae60;
   border-radius: 6px;
+
   cursor: pointer;
 }
 
 button:hover {
-  background: #219150;
+  background: #27ae60;
+  color: #ffffff;
 }
 
 /* ================= LOGOUT ================= */
 #logout-btn {
   background: #e74c3c;
+  color: #fff;
+  border: none;
   margin-top: 15px;
 }
 
@@ -116,7 +143,6 @@ button:hover {
 /* ================= MESSAGE ================= */
 #message {
   text-align: center;
-  color: green;
   margin-top: 10px;
   font-weight: bold;
 }
@@ -131,6 +157,7 @@ button:hover {
 li {
   background: #fafafa;
   border-left: 5px solid #27ae60;
+
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -143,11 +170,12 @@ li {
 /* ================= DELETE BUTTON ================= */
 li button {
   background: #e74c3c;
+  color: #fff;
+
   padding: 5px 10px;
   font-size: 12px;
 
   width: auto;
-  display: inline-block;
   border-radius: 5px;
 }
 
