@@ -1,12 +1,9 @@
-/* ================= RESET ================= */
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   }
 
-/* ================= BODY ================= */
 body {
 background: #f0f2f5;
 font-family: Arial, sans-serif;
@@ -17,7 +14,6 @@ justify-content: center;
 align-items: flex-start;
 }
 
-/* ================= CONTAINERS ================= */
 #auth-container,
 #app {
 width: 100%;
@@ -25,7 +21,6 @@ max-width: 400px;
 margin-top: 50px;
 }
 
-/* ================= CARDS ================= */
 #login-box,
 #signup-box,
 #forgot-box,
@@ -36,20 +31,17 @@ border-radius: 12px;
 box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* hide inactive */
 #signup-box,
 #forgot-box {
 display: none;
 }
 
-/* ================= HEADINGS ================= */
 h1, h2 {
 text-align: center;
 margin-bottom: 15px;
 color: #2c3e50;
 }
 
-/* ================= 🔥 WELCOME SCREEN ================= */
 #welcome-screen {
 position: fixed;
 top: 0;
@@ -71,11 +63,9 @@ font-weight: bold;
 z-index: 9999;
 }
 
-/* ================= 🔄 SPIN ANIMATION ================= */
 #welcome-text {
 display: inline-block;
 
-/* smooth spin + settle */
 animation: spin360 0.8s ease-out, settle 2s ease 0.8s forwards;
 }
 
@@ -89,7 +79,6 @@ from { transform: rotate(360deg); }
 to { transform: rotate(390deg); }
 }
 
-/* ================= FORM ================= */
 form {
 margin-top: 10px;
 }
@@ -106,7 +95,6 @@ border-radius: 6px;
 font-size: 14px;
 }
 
-/* ================= BUTTON (WHITE STYLE) ================= */
 button {
 width: 100%;
 padding: 12px;
@@ -126,7 +114,6 @@ background: #27ae60;
 color: #ffffff;
 }
 
-/* ================= LOGOUT ================= */
 #logout-btn {
 background: #e74c3c;
 color: #fff;
@@ -138,20 +125,17 @@ margin-top: 15px;
 background: #c0392b;
 }
 
-/* ================= MESSAGE ================= */
 #message {
 text-align: center;
 margin-top: 10px;
 font-weight: bold;
 }
 
-/* ================= LIST ================= */
 #list {
 list-style: none;
 margin-top: 15px;
 }
 
-/* ================= LIST ITEM ================= */
 li {
 background: #fafafa;
 border-left: 5px solid #27ae60;
@@ -165,7 +149,6 @@ justify-content: space-between;
 align-items: center;
 }
 
-/* ================= DELETE BUTTON ================= */
 li button {
 background: #e74c3c;
 color: #fff;
@@ -181,7 +164,6 @@ li button:hover {
 background: #c0392b;
 }
 
-/* ================= EMPTY STATE ================= */
 #list:empty::after {
 content: "No expenses yet";
 display: block;
@@ -190,7 +172,6 @@ color: #999;
 margin-top: 10px;
 }
 
-/* ================= LINKS ================= */
 #auth-container p {
 text-align: center;
 font-size: 14px;
@@ -205,7 +186,6 @@ text-decoration: none;
 text-decoration: underline;
 }
 
-/* ================= MOBILE ================= */
 @media (max-width: 400px) {
 
 #login-box,
