@@ -192,6 +192,26 @@ li button:hover {
   margin-top: 10px;
 }
 
+/* ================= FORGOT PASSWORD ================= */
+#forgot-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  display: none;
+}
+
+/* make links look nicer */
+#auth-container a {
+  color: #27ae60;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+#auth-container a:hover {
+  text-decoration: underline;
+}
+
 /* ================= MOBILE ================= */
 @media (max-width: 400px) {
 

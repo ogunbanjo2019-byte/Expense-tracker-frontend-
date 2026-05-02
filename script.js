@@ -153,6 +153,60 @@ signupForm && (signupForm.onsubmit = async (e) => {
     }
 });
 
+// ================= FORGOT PASSWORD =================
+const showForgot = document.getElementById("show-forgot");
+const forgotBox = document.getElementById("forgot-box");
+const backLogin = document.getElementById("back-login");
+const forgotForm = document.getElementById("forgot-form");
+
+showForgot.onclick = (e) => {
+  e.preventDefault();
+  loginBox.style.display = "none";
+  signupBox.style.display = "none";
+  forgotBox.style.display = "block";
+};
+
+backLogin.onclick = (e) => {
+  e.preventDefault();
+  forgotBox.style.display = "none";
+  loginBox.style.display = "block";
+};
+
+// ================= RESET PASSWORD =================
+forgotForm.onsubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch(`${BASE_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: document.getElementById("forgot-email").value,
+        newPassword: document.getElementById("new-password").value
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Password reset successful!");
+
+      // go back to login
+      forgotBox.style.display = "none";
+      loginBox.style.display = "block";
+
+    } else {
+      alert(data.message || "Reset failed");
+    }
+
+  } catch (err) {
+    console.log(err);
+    alert("Server error");
+  }
+};
+
 
 // ================= LOAD EXPENSES =================
 async function loadExpenses() {
