@@ -21,7 +21,10 @@
             <button type="submit">Login</button>
         </form>
 
-        <!-- ✅ MOVED HERE -->
+        <!-- ✅ MESSAGE -->
+        <p id="login-message" style="text-align:center; margin-top:10px;"></p>
+
+        <!-- FORGOT PASSWORD -->
         <p style="text-align:center; margin-top:10px;">
             <a href="#" id="show-forgot">Forgot Password?</a>
         </p>
@@ -42,12 +45,15 @@
             <button type="submit">Sign Up</button>
         </form>
 
+        <!-- ✅ MESSAGE -->
+        <p id="signup-message" style="text-align:center; margin-top:10px;"></p>
+
         <p style="text-align:center;">
             Already have an account? <a href="#" id="show-login">Login</a>
         </p>
     </div>
 
-    <!-- FORGOT PASSWORD (NOW INSIDE AUTH CONTAINER) -->
+    <!-- FORGOT PASSWORD -->
     <div id="forgot-box" style="display:none;">
         <h2>Reset Password</h2>
 
@@ -57,6 +63,9 @@
             <button type="submit">Reset Password</button>
         </form>
 
+        <!-- ✅ MESSAGE -->
+        <p id="forgot-message" style="text-align:center; margin-top:10px;"></p>
+
         <p style="text-align:center;">
             <a href="#" id="back-login">Back to Login</a>
         </p>
@@ -64,12 +73,10 @@
 
 </div>
 
-
-<!-- ================= 🔥 WELCOME SCREEN ================= -->
+<!-- ================= WELCOME SCREEN ================= -->
 <div id="welcome-screen" style="display:none;">
     <h1 id="welcome-text"></h1>
 </div>
-
 
 <!-- ================= APP SECTION ================= -->
 <div id="app" style="display:none;">

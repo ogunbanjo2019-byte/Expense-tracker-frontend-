@@ -6,7 +6,7 @@ const signupBox = document.getElementById('signup-box');
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 
-const message = document.getElementById('message');
+const message = document.getElementById('signup-message');
 
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
