@@ -6,7 +6,7 @@ const signupBox = document.getElementById('signup-box');
 const showSignup = document.getElementById('show-signup');
 const showLogin = document.getElementById('show-login');
 
-const message = document.getElementById('message') || { textContent: "", style: {} };
+const message = document.getElementById('message');
 
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
@@ -36,6 +36,26 @@ showLogin && (showLogin.onclick = (e) => {
 });
 
 
+// ================= SHOW WELCOME SCREEN =================
+function showWelcomeScreen() {
+    const name = localStorage.getItem("name") || "User";
+
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const welcomeText = document.getElementById("welcome-text");
+
+    if (!welcomeScreen || !welcomeText) return;
+
+    welcomeText.textContent = `Welcome, ${name}`;
+    welcomeScreen.style.display = "flex";
+
+    setTimeout(() => {
+        welcomeScreen.style.display = "none";
+        appContainer.style.display = "block";
+        loadExpenses();
+    }, 2000);
+}
+
+
 // ================= AUTH CHECK =================
 function checkAuth() {
     const storedToken = localStorage.getItem('token');
@@ -49,22 +69,9 @@ function checkAuth() {
     token = storedToken;
 
     authContainer.style.display = "none";
-    appContainer.style.display = "block";
+    appContainer.style.display = "none";
 
-    // 🔥 SHOW WELCOME
-    const welcome = document.getElementById("welcome");
-    const name = localStorage.getItem("name");
-
-    if (name && welcome) {
-        welcome.textContent = `Welcome, ${name}`;
-
-        // animation
-        setTimeout(() => {
-            welcome.classList.add("welcome-show");
-        }, 100);
-    }
-
-    loadExpenses();
+    showWelcomeScreen();
 }
 
 
@@ -83,21 +90,22 @@ loginForm && (loginForm.onsubmit = async (e) => {
         });
 
         const data = await res.json();
-        console.log("LOGIN:", data);
 
         if (res.ok && data.token) {
 
             localStorage.setItem('token', data.token);
 
-            // 🔥 SAVE NAME
-            localStorage.setItem("name", data.user.name);
+            // 🔥 save name safely
+            if (data.user && data.user.name) {
+                localStorage.setItem("name", data.user.name);
+            }
 
             token = data.token;
 
             authContainer.style.display = "none";
-            appContainer.style.display = "block";
+            appContainer.style.display = "none";
 
-            checkAuth(); // 🔥 ensures welcome shows properly
+            showWelcomeScreen();
 
         } else {
             alert(data.message || "Login failed");
@@ -274,7 +282,7 @@ form && (form.onsubmit = async (e) => {
 // ================= LOGOUT =================
 logoutBtn && (logoutBtn.onclick = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('name'); // 🔥 important
+    localStorage.removeItem('name');
     token = null;
     checkAuth();
 });
