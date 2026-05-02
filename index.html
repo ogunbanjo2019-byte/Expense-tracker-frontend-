@@ -21,7 +21,14 @@
             <button type="submit">Login</button>
         </form>
 
-        <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+        <!-- ✅ MOVED HERE -->
+        <p style="text-align:center; margin-top:10px;">
+            <a href="#" id="show-forgot">Forgot Password?</a>
+        </p>
+
+        <p style="text-align:center;">
+            Don't have an account? <a href="#" id="show-signup">Sign Up</a>
+        </p>
     </div>
 
     <!-- SIGNUP -->
@@ -35,24 +42,28 @@
             <button type="submit">Sign Up</button>
         </form>
 
-        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+        <p style="text-align:center;">
+            Already have an account? <a href="#" id="show-login">Login</a>
+        </p>
+    </div>
+
+    <!-- FORGOT PASSWORD (NOW INSIDE AUTH CONTAINER) -->
+    <div id="forgot-box" style="display:none;">
+        <h2>Reset Password</h2>
+
+        <form id="forgot-form">
+            <input type="email" id="forgot-email" placeholder="Enter your email" required>
+            <input type="password" id="new-password" placeholder="New password" required>
+            <button type="submit">Reset Password</button>
+        </form>
+
+        <p style="text-align:center;">
+            <a href="#" id="back-login">Back to Login</a>
+        </p>
     </div>
 
 </div>
 
-<div id="forgot-box" style="display:none;">
-    <h2>Reset Password</h2>
-
-    <form id="forgot-form">
-        <input type="email" id="forgot-email" placeholder="Enter your email" required>
-        <input type="password" id="new-password" placeholder="New password" required>
-        <button type="submit">Reset Password</button>
-    </form>
-
-    <p><a href="#" id="back-login">Back to Login</a></p>
-</div>
-
-<p><a href="#" id="show-forgot">Forgot Password?</a></p>
 
 <!-- ================= 🔥 WELCOME SCREEN ================= -->
 <div id="welcome-screen" style="display:none;">
@@ -67,7 +78,6 @@
 
     <h2>Total: ₦ <span id="total">0</span></h2>
 
-    <!-- ADD EXPENSE FORM -->
     <form id="form">
         <input type="text" id="desc" placeholder="What did you spend on?" required>
         <input type="number" id="amount" placeholder="Enter amount" required>
@@ -83,13 +93,10 @@
         <button type="submit">Add Expense</button>
     </form>
 
-    <!-- EMPTY MESSAGE -->
     <p id="empty-msg">No expenses yet</p>
 
-    <!-- EXPENSE LIST -->
     <ul id="list"></ul>
 
-    <!-- LOGOUT -->
     <button id="logout-btn">Logout</button>
 
 </div>
