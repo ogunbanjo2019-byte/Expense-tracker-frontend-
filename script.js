@@ -16,7 +16,7 @@ const appContainer = document.getElementById('app');
 
 const logoutBtn = document.getElementById('logout-btn');
 const form = document.getElementById('form');
-
+const resetLink = `https://https://expense-tracker-frontend-delta-eight.vercel.app//reset.html?token=${resetToken}`;
 const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
 let token = localStorage.getItem('token');
