@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
+    const resetLink = `https://expense-tracker-frontend-delta-eight.vercel.app/reset.html?token=${resetToken}`;
+
     let token = localStorage.getItem('token');
 
     // ================= HELPER =================
