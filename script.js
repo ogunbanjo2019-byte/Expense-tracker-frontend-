@@ -227,32 +227,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ================= ADD EXPENSE =================
-    form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    description: document.getElementById('desc').value,
-                    amount: document.getElementById('amount').value,
-                    category: document.getElementById('category').value
-                })
-            });
+    console.log("Submitting expense...");
 
-            if (!res.ok) throw new Error();
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
 
-            form.reset();
-            loadExpenses();
+    try {
+        const res = await fetch(`${BASE_URL}/expenses`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                description: document.getElementById('desc').value,
+                amount: document.getElementById('amount').value,
+                category: document.getElementById('category').value
+            })
+        });
 
-        } catch (err) {
-            console.log("Add error:", err);
+        console.log("Status:", res.status);
+
+        const data = await res.json();
+        console.log("Response:", data);
+
+        if (!res.ok) {
+            alert("Request failed");
+            return;
         }
-    });
+
+        loadExpenses();
+
+    } catch (err) {
+        console.log("Error:", err);
+    }
+});
 
     // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
