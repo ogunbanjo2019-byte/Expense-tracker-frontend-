@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Logged out due to inactivity");
 
             location.reload();
-        }, 3000); 
+        }, 10000); 
     }
 
     function showMessage(element, text, color = "red") {
@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
         element.textContent = text;
         element.style.color = color;
 
-        // setTimeout(() => {
-        //     element.textContent = "";
-        // }, 3000);
+        setTimeout(() => {
+            element.textContent = "";
+        }, 3000);
     }
 
     function switchView(view) {
