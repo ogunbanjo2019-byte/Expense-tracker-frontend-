@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div id="auth-container">
     <div id="login-box">
         <h2>Login</h2>
@@ -16,7 +17,9 @@
             <input type="password" id="login-password" placeholder="Enter your password" required>
             <button type="submit">Login</button>
         </form>
+
         <p id="login-message" style="text-align:center; margin-top:10px;"></p>
+
         <p style="text-align:center; margin-top:10px;">
             <a href="#" id="show-forgot">Forgot Password?</a>
         </p>
@@ -58,7 +61,6 @@
             <a href="#" id="back-login">Back to Login</a>
         </p>
     </div>
-
 </div>
 
 <div id="welcome-screen" style="display:none;">
@@ -88,7 +90,8 @@
 
     <p id="empty-msg">No expenses yet</p>
 
-    <ul id="list"></ul>
+    <!-- 🔥 Expense list -->
+    <ul id="list" class="expense-list"></ul>
 
     <button id="logout-btn">Logout</button>
 

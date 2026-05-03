@@ -185,6 +185,23 @@ text-decoration: none;
 #auth-container a:hover {
 text-decoration: underline;
 }
+.expense-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background: #eee;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
 
 @media (max-width: 400px) {
 

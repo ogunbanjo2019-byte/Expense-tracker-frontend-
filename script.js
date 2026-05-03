@@ -198,42 +198,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+    const token = localStorage.getItem("token");
 
-            if (!res.ok) throw new Error();
+    try {
+        const res = await fetch(`${BASE_URL}/expenses`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
 
-            const expenses = await res.json();
+        if (!res.ok) throw new Error();
 
-            list.innerHTML = "";
-            let total = 0;
+        const expenses = await res.json();
 
-            expenses.forEach(exp => {
-                const li = document.createElement("li");
-                li.textContent = `${exp.description} - ₦${exp.amount} (${exp.category})`;
-                list.appendChild(li);
-                total += Number(exp.amount);
-            });
+        list.innerHTML = "";
+        let total = 0;
 
-            totalDisplay.textContent = total;
-
-        } catch (err) {
-            console.log("Load error:", err);
+        if (expenses.length === 0) {
+            document.getElementById("empty-msg").style.display = "block";
+        } else {
+            document.getElementById("empty-msg").style.display = "none";
         }
+
+        expenses.forEach(exp => {
+            const li = document.createElement("li");
+
+            li.innerHTML = `
+                <span>${exp.description} - ₦${exp.amount} (${exp.category})</span>
+                <button class="delete-btn" data-id="${exp._id}">Delete</button>
+            `;
+
+            list.appendChild(li);
+            total += Number(exp.amount);
+        });
+
+        totalDisplay.textContent = total;
+
+        // 🔥 Attach delete events AFTER rendering
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", deleteExpense);
+        });
+
+    } catch (err) {
+        console.log("Load error:", err);
     }
+}
 
     // ================= ADD EXPENSE =================
-        form?.addEventListener("submit", async (e) => {
+    form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    console.log("Submitting expense...");
-
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
 
     try {
         const res = await fetch(`${BASE_URL}/expenses`, {
@@ -249,23 +264,43 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         });
 
-        console.log("Status:", res.status);
+        if (!res.ok) throw new Error();
 
-        const data = await res.json();
-        console.log("Response:", data);
-
-        if (!res.ok) {
-            alert("Request failed");
-            return;
-        }
-
+        form.reset();
         loadExpenses();
 
     } catch (err) {
-        console.log("Error:", err);
+        console.log("Add error:", err);
     }
 });
 
+// deleteExpense
+
+async function deleteExpense(e) {
+    const id = e.target.dataset.id;
+    const token = localStorage.getItem("token");
+
+    if (!confirm("Delete this expense?")) return;
+
+    try {
+        const res = await fetch(`${BASE_URL}/expenses/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+            console.log("Delete failed:", res.status);
+            return;
+        }
+
+        loadExpenses(); // 🔁 refresh list
+
+    } catch (err) {
+        console.log("Delete error:", err);
+    }
+}
     // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem('token');
