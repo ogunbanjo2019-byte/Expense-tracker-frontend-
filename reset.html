@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Reset Password</title>
 </head>
 <body>
 
-<h2>Reset Password</h2>
+<h2>Reset Your Password</h2>
 
 <form id="reset-form">
     <input type="password" id="new-password" placeholder="Enter new password" required>
@@ -18,10 +18,12 @@
 const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
 // get token from URL
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
+const token = new URLSearchParams(window.location.search).get("token");
 
-document.getElementById("reset-form").addEventListener("submit", async (e) => {
+const form = document.getElementById("reset-form");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const newPassword = document.getElementById("new-password").value;
@@ -32,18 +34,21 @@ document.getElementById("reset-form").addEventListener("submit", async (e) => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                token,
-                newPassword
-            })
+            body: JSON.stringify({ token, newPassword })
         });
 
         const data = await res.json();
 
-        document.getElementById("message").textContent = data.message;
+        if (res.ok) {
+            message.textContent = "Password reset successful ✅";
+            message.style.color = "green";
+        } else {
+            message.textContent = data.message;
+            message.style.color = "red";
+        }
 
     } catch (err) {
-        document.getElementById("message").textContent = "Error resetting password";
+        message.textContent = "Server error";
     }
 });
 </script>
