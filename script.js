@@ -20,51 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app');
 
+    const form = document.getElementById('form');
+    const list = document.getElementById('list');
+    const totalDisplay = document.getElementById('total');
+
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
-    document.addEventListener("DOMContentLoaded", () => {
+    let token = localStorage.getItem("token");
 
-    const form = document.getElementById("reset-form");
-    const message = document.getElementById("reset-message");
-
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (!token) {
-        message.textContent = "Invalid reset link";
-        return;
-    }
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const newPassword = document.getElementById("new-password").value;
-
-        try {
-            const res = await fetch("https://expense-tracker-backend-1-afoj.onrender.com/api/auth/reset-password", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ token, newPassword })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                message.textContent = "Password reset successful!";
-                message.style.color = "green";
-            } else {
-                message.textContent = data.message;
-                message.style.color = "red";
-            }
-
-        } catch {
-            message.textContent = "Server error";
-        }
-    });
-
-});
-
-    // ================= UI SWITCH =================
+    // ================= SWITCH VIEW =================
     function switchView(view) {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
@@ -72,92 +36,91 @@ document.addEventListener("DOMContentLoaded", () => {
         view.style.display = "block";
     }
 
-    showSignup?.addEventListener("click", (e) => {
+    showSignup?.addEventListener("click", e => {
         e.preventDefault();
         switchView(signupBox);
     });
 
-    showLogin?.addEventListener("click", (e) => {
+    showLogin?.addEventListener("click", e => {
         e.preventDefault();
         switchView(loginBox);
     });
 
-    showForgot?.addEventListener("click", (e) => {
+    showForgot?.addEventListener("click", e => {
         e.preventDefault();
         switchView(forgotBox);
     });
 
-    backLogin?.addEventListener("click", (e) => {
+    backLogin?.addEventListener("click", e => {
         e.preventDefault();
         switchView(loginBox);
     });
 
-    function showMessage(element, text, color = "red") {
-        element.textContent = text;
-        element.style.color = color;
-        setTimeout(() => element.textContent = "", 3000);
+    function showMessage(el, text, color = "red") {
+        el.textContent = text;
+        el.style.color = color;
+        setTimeout(() => el.textContent = "", 3000);
     }
 
     // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    try {
-        const res = await fetch(`${BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-password').value
-            })
-        });
+        try {
+            const res = await fetch(`${BASE_URL}/auth/login`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    email: document.getElementById("login-email").value,
+                    password: document.getElementById("login-password").value
+                })
+            });
 
-        const data = await res.json();
-        console.log("LOGIN DATA:", data);
+            const data = await res.json();
 
-        if (res.ok && data.token) {
+            if (res.ok && data.token) {
+                localStorage.setItem("token", data.token);
 
-            // ✅ Save token
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("name", data.user?.name || "User");
+                authContainer.style.display = "none";
+                appContainer.style.display = "block";
 
-            // ✅ FORCE UI SWITCH
-            document.getElementById("auth-container").style.display = "none";
-            document.getElementById("app").style.display = "block";
+                loadExpenses();
 
-            // ✅ Load expenses
-            loadExpenses();
+            } else {
+                showMessage(loginMessage, data.message);
+            }
 
-        } else {
-            showMessage(loginMessage, data.message || "Login failed");
+        } catch {
+            showMessage(loginMessage, "Server error");
         }
+    });
 
-    } catch (err) {
-        console.log(err);
-        showMessage(loginMessage, "Server error");
-    }
-});
     // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const res = await fetch(`${BASE_URL}/auth/signup`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                name: document.getElementById('signup-name').value,
-                email: document.getElementById('signup-email').value,
-                password: document.getElementById('signup-password').value
-            })
-        });
+        try {
+            const res = await fetch(`${BASE_URL}/auth/signup`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    name: document.getElementById("signup-name").value,
+                    email: document.getElementById("signup-email").value,
+                    password: document.getElementById("signup-password").value
+                })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (res.ok) {
-            showMessage(signupMessage, "Signup successful", "green");
-            switchView(loginBox);
-        } else {
-            showMessage(signupMessage, data.message);
+            if (res.ok) {
+                showMessage(signupMessage, "Signup successful", "green");
+                switchView(loginBox);
+            } else {
+                showMessage(signupMessage, data.message);
+            }
+
+        } catch {
+            showMessage(signupMessage, "Server error");
         }
     });
 
@@ -186,5 +149,74 @@ document.addEventListener("DOMContentLoaded", () => {
             showMessage(forgotMessage, "Server error");
         }
     });
+
+    // ================= LOAD EXPENSES =================
+    async function loadExpenses() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const expenses = await res.json();
+
+            list.innerHTML = "";
+            let total = 0;
+
+            expenses.forEach(exp => {
+                const li = document.createElement("li");
+
+                li.innerHTML = `
+                    ${exp.description} - ₦${exp.amount}
+                `;
+
+                list.appendChild(li);
+                total += Number(exp.amount);
+            });
+
+            totalDisplay.textContent = total;
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    // ================= ADD EXPENSE =================
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("token");
+
+        try {
+            await fetch(`${BASE_URL}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    description: document.getElementById("desc").value,
+                    amount: document.getElementById("amount").value,
+                    category: document.getElementById("category").value
+                })
+            });
+
+            form.reset();
+            loadExpenses();
+
+        } catch (err) {
+            console.log(err);
+        }
+    });
+
+    // ================= AUTO LOGIN =================
+    if (token) {
+        authContainer.style.display = "none";
+        appContainer.style.display = "block";
+        loadExpenses();
+    }
 
 });
