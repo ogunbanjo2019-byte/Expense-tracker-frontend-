@@ -113,26 +113,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const data = await res.json();
+        console.log("LOGIN DATA:", data);
 
         if (res.ok && data.token) {
-            // ✅ SAVE TOKEN
+
+            // ✅ Save token
             localStorage.setItem("token", data.token);
             localStorage.setItem("name", data.user?.name || "User");
 
-            // ✅ HIDE LOGIN
-            authContainer.style.display = "none";
+            // ✅ FORCE UI SWITCH
+            document.getElementById("auth-container").style.display = "none";
+            document.getElementById("app").style.display = "block";
 
-            // ✅ SHOW APP
-            appContainer.style.display = "block";
-
-            // ✅ LOAD DATA (IMPORTANT)
+            // ✅ Load expenses
             loadExpenses();
 
         } else {
             showMessage(loginMessage, data.message || "Login failed");
         }
 
-    } catch {
+    } catch (err) {
+        console.log(err);
         showMessage(loginMessage, "Server error");
     }
 });
