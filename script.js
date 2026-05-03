@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
+    const logoutBtn = document.getElementById("logout-btn");
 
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
@@ -240,6 +241,16 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("ADD ERROR:", err);
         }
     });
+    // ================= LOGOUT =================
+logoutBtn?.addEventListener("click", () => {
+    localStorage.removeItem("token");
+
+    // Go back to login UI
+    authContainer.style.display = "block";
+    appContainer.style.display = "none";
+
+    alert("Logged out successfully");
+});
 
     // ================= AUTO LOGIN =================
     if (token) {
