@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app');
 
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const welcomeText = document.getElementById("welcome-text");
+
     const form = document.getElementById('form');
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
@@ -29,14 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let token = localStorage.getItem("token");
     let inactivityTimer;
+    let listenersAdded = false;
 
     // ================= INACTIVITY LOGOUT =================
     function startInactivityTimer() {
         resetTimer();
 
-        ["click", "mousemove", "keydown", "scroll"].forEach(event => {
-            document.addEventListener(event, resetTimer);
-        });
+        if (!listenersAdded) {
+            ["click", "mousemove", "keydown", "scroll"].forEach(event => {
+                document.addEventListener(event, resetTimer);
+            });
+            listenersAdded = true;
+        }
     }
 
     function resetTimer() {
@@ -44,9 +51,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
         inactivityTimer = setTimeout(() => {
             localStorage.removeItem("token");
+            localStorage.removeItem("name");
             alert("Session expired. Please login again.");
             location.reload();
         }, 300000); // 5 minutes
+    }
+
+    // ================= WELCOME SCREEN =================
+    function showWelcomeScreen() {
+        const name = localStorage.getItem("name") || "User";
+
+        welcomeText.textContent = `Welcome, ${name}`;
+
+        authContainer.style.display = "none";
+        welcomeScreen.classList.add("show");
+
+        setTimeout(() => {
+            welcomeScreen.classList.remove("show");
+            welcomeScreen.classList.add("hide");
+
+            setTimeout(() => {
+                welcomeScreen.style.display = "none";
+
+                appContainer.style.display = "block";
+                appContainer.classList.add("show");
+
+                loadExpenses();
+                startInactivityTimer();
+
+            }, 800);
+
+        }, 2000);
     }
 
     // ================= SWITCH VIEW =================
@@ -101,12 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (res.ok && data.token) {
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("name", data.user?.name || "User");
 
-                authContainer.style.display = "none";
-                appContainer.style.display = "block";
-
-                loadExpenses();
-                startInactivityTimer(); // ✅ START TIMER
+                showWelcomeScreen();
 
             } else {
                 showMessage(loginMessage, data.message);
@@ -241,23 +273,21 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("ADD ERROR:", err);
         }
     });
+
     // ================= LOGOUT =================
-logoutBtn?.addEventListener("click", () => {
-    localStorage.removeItem("token");
+    logoutBtn?.addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("name");
 
-    // Go back to login UI
-    authContainer.style.display = "block";
-    appContainer.style.display = "none";
+        clearTimeout(inactivityTimer);
 
-    alert("Logged out successfully");
-});
+        alert("Logged out successfully");
+        location.reload(); // 🔥 clean reset
+    });
 
     // ================= AUTO LOGIN =================
     if (token) {
-        authContainer.style.display = "none";
-        appContainer.style.display = "block";
-        loadExpenses();
-        startInactivityTimer(); // ✅ ALSO START HERE
+        showWelcomeScreen();
     }
 
 });
