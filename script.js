@@ -11,9 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
+    const forgotForm = document.getElementById('forgot-form');
 
     const loginMessage = document.getElementById('login-message');
     const signupMessage = document.getElementById('signup-message');
+    const forgotMessage = document.getElementById('forgot-message');
 
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app');
@@ -22,8 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
-
-    const resetLink = `https://https://expense-tracker-frontend-delta-eight.vercel.app/#/reset.html?token=${resetToken}`;
 
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
@@ -78,6 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
     showLogin?.addEventListener("click", (e) => {
         e.preventDefault();
         switchView(loginBox);
+    });
+
+    showForgot?.addEventListener("click", (e) => {
+        e.preventDefault();
+        switchView(forgotBox);
     });
 
     backLogin?.addEventListener("click", (e) => {
@@ -198,140 +203,128 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ================= FORGOT PASSWORD =================
+    forgotForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("forgot-email").value;
+
+        try {
+            const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                showMessage(forgotMessage, "Reset link sent to your email", "green");
+            } else {
+                showMessage(forgotMessage, data.message || "Error sending email");
+            }
+
+        } catch (err) {
+            console.log(err);
+            showMessage(forgotMessage, "Server error");
+        }
+    });
+
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
-    const token = localStorage.getItem("token");
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
+            if (!res.ok) throw new Error();
 
-        if (!res.ok) throw new Error();
+            const expenses = await res.json();
 
-        const expenses = await res.json();
+            list.innerHTML = "";
+            let total = 0;
 
-        list.innerHTML = "";
-        let total = 0;
+            expenses.forEach(exp => {
+                const li = document.createElement("li");
 
-        if (expenses.length === 0) {
-            document.getElementById("empty-msg").style.display = "block";
-        } else {
-            document.getElementById("empty-msg").style.display = "none";
+                li.innerHTML = `
+                    <span>${exp.description} - ₦${exp.amount} (${exp.category})</span>
+                    <button class="delete-btn" data-id="${exp._id}">Delete</button>
+                `;
+
+                list.appendChild(li);
+                total += Number(exp.amount);
+            });
+
+            totalDisplay.textContent = total;
+
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", deleteExpense);
+            });
+
+        } catch (err) {
+            console.log("Load error:", err);
         }
-
-        expenses.forEach(exp => {
-            const li = document.createElement("li");
-
-            li.innerHTML = `
-                <span>${exp.description} - ₦${exp.amount} (${exp.category})</span>
-                <button class="delete-btn" data-id="${exp._id}">Delete</button>
-            `;
-
-            list.appendChild(li);
-            total += Number(exp.amount);
-        });
-
-        totalDisplay.textContent = total;
-
-        // 🔥 Attach delete events AFTER rendering
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", deleteExpense);
-        });
-
-    } catch (err) {
-        console.log("Load error:", err);
     }
-}
 
     // ================= ADD EXPENSE =================
     form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const token = localStorage.getItem("token");
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    description: document.getElementById('desc').value,
+                    amount: document.getElementById('amount').value,
+                    category: document.getElementById('category').value
+                })
+            });
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                description: document.getElementById('desc').value,
-                amount: document.getElementById('amount').value,
-                category: document.getElementById('category').value
-            })
-        });
+            if (!res.ok) throw new Error();
 
-        if (!res.ok) throw new Error();
+            form.reset();
+            loadExpenses();
 
-        form.reset();
-        loadExpenses();
-
-    } catch (err) {
-        console.log("Add error:", err);
-    }
-});
-
-
-//reset passsword
-forgotForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("forgot-email").value;
-
-    try {
-        const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            showMessage(forgotMessage, "Reset link sent to your email", "green");
-        } else {
-            showMessage(forgotMessage, data.message || "Error sending email");
+        } catch (err) {
+            console.log("Add error:", err);
         }
+    });
 
-    } catch (err) {
-        console.log(err);
-        showMessage(forgotMessage, "Server error");
-    }
-});
-// deleteExpense
+    // ================= DELETE =================
+    async function deleteExpense(e) {
+        const id = e.target.dataset.id;
 
-async function deleteExpense(e) {
-    const id = e.target.dataset.id;
-    const token = localStorage.getItem("token");
+        if (!confirm("Delete this expense?")) return;
 
-    if (!confirm("Delete this expense?")) return;
+        try {
+            const res = await fetch(`${BASE_URL}/expenses/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`
+            if (!res.ok) {
+                console.log("Delete failed:", res.status);
+                return;
             }
-        });
 
-        if (!res.ok) {
-            console.log("Delete failed:", res.status);
-            return;
+            loadExpenses();
+
+        } catch (err) {
+            console.log("Delete error:", err);
         }
-
-        loadExpenses(); // 🔁 refresh list
-
-    } catch (err) {
-        console.log("Delete error:", err);
     }
-}
+
     // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem('token');
