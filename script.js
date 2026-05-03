@@ -31,8 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let inactivityTimer;
     let listenersAdded = false;
 
-    // 🔍 DEBUG
-    console.log("Elements:", showForgot, forgotBox);
+    console.log("✅ JS IS RUNNING");
 
     // ================= INACTIVITY TIMER =================
     function startInactivityTimer() {
@@ -67,37 +66,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function switchView(view) {
-        loginBox.style.display = "none";
-        signupBox.style.display = "none";
-        forgotBox.style.display = "none";
+        if (loginBox) loginBox.style.display = "none";
+        if (signupBox) signupBox.style.display = "none";
+        if (forgotBox) forgotBox.style.display = "none";
 
         if (view) view.style.display = "block";
     }
 
     // ================= NAVIGATION =================
-    showSignup?.addEventListener("click", (e) => {
-        e.preventDefault();
-        switchView(signupBox);
-    });
+    if (showSignup) {
+        showSignup.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchView(signupBox);
+        });
+    }
 
-    showLogin?.addEventListener("click", (e) => {
-        e.preventDefault();
-        switchView(loginBox);
-    });
+    if (showLogin) {
+        showLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchView(loginBox);
+        });
+    }
 
-    showForgot?.addEventListener("click", (e) => {
-        e.preventDefault();
-        console.log("Forgot clicked");
+    if (showForgot) {
+        showForgot.addEventListener("click", (e) => {
+            e.preventDefault();
+            console.log("🔥 Forgot clicked");
 
-        loginBox.style.display = "none";
-        signupBox.style.display = "none";
-        forgotBox.style.display = "block";
-    });
+            switchView(forgotBox);
+        });
+    }
 
-    backLogin?.addEventListener("click", (e) => {
-        e.preventDefault();
-        switchView(loginBox);
-    });
+    if (backLogin) {
+        backLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchView(loginBox);
+        });
+    }
 
     // ================= WELCOME =================
     function showWelcomeScreen() {
@@ -150,98 +155,102 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ================= LOGIN =================
-    loginForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: document.getElementById('login-email').value,
-                    password: document.getElementById('login-password').value
-                })
-            });
+            try {
+                const res = await fetch(`${BASE_URL}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: document.getElementById('login-email').value,
+                        password: document.getElementById('login-password').value
+                    })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            if (res.ok && data.token) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem("name", data.user?.name || "User");
+                if (res.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem("name", data.user?.name || "User");
 
-                token = data.token;
-                authContainer.style.display = "none";
+                    token = data.token;
+                    authContainer.style.display = "none";
 
-                showWelcomeScreen();
+                    showWelcomeScreen();
 
-            } else {
-                showMessage(loginMessage, data.message || "Login failed");
+                } else {
+                    showMessage(loginMessage, data.message || "Login failed");
+                }
+
+            } catch {
+                showMessage(loginMessage, "Server error");
             }
-
-        } catch {
-            showMessage(loginMessage, "Server error");
-        }
-    });
+        });
+    }
 
     // ================= SIGNUP =================
-    signupForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (signupForm) {
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: document.getElementById('signup-name').value,
-                    email: document.getElementById('signup-email').value,
-                    password: document.getElementById('signup-password').value
-                })
-            });
+            try {
+                const res = await fetch(`${BASE_URL}/auth/signup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: document.getElementById('signup-name').value,
+                        email: document.getElementById('signup-email').value,
+                        password: document.getElementById('signup-password').value
+                    })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            if (res.ok) {
-                showMessage(signupMessage, "Signup successful! Now login.", "green");
-                switchView(loginBox);
-            } else {
-                showMessage(signupMessage, data.message || "Signup failed");
+                if (res.ok) {
+                    showMessage(signupMessage, "Signup successful! Now login.", "green");
+                    switchView(loginBox);
+                } else {
+                    showMessage(signupMessage, data.message || "Signup failed");
+                }
+
+            } catch {
+                showMessage(signupMessage, "Server error");
             }
-
-        } catch {
-            showMessage(signupMessage, "Server error");
-        }
-    });
+        });
+    }
 
     // ================= FORGOT PASSWORD =================
-    forgotForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (forgotForm) {
+        forgotForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        const email = document.getElementById("forgot-email").value;
+            const email = document.getElementById("forgot-email").value;
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email })
-            });
+            try {
+                const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            console.log("Response:", data);
+                console.log("Response:", data);
 
-            if (res.ok) {
-                showMessage(forgotMessage, data.message, "green");
-            } else {
-                showMessage(forgotMessage, data.message || "Error sending email");
+                if (res.ok) {
+                    showMessage(forgotMessage, data.message, "green");
+                } else {
+                    showMessage(forgotMessage, data.message || "Error sending email");
+                }
+
+            } catch (err) {
+                console.log(err);
+                showMessage(forgotMessage, "Server error");
             }
-
-        } catch (err) {
-            console.log(err);
-            showMessage(forgotMessage, "Server error");
-        }
-    });
+        });
+    }
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
@@ -283,32 +292,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ================= ADD EXPENSE =================
-    form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    description: document.getElementById('desc').value,
-                    amount: document.getElementById('amount').value,
-                    category: document.getElementById('category').value
-                })
-            });
+            try {
+                const res = await fetch(`${BASE_URL}/expenses`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        description: document.getElementById('desc').value,
+                        amount: document.getElementById('amount').value,
+                        category: document.getElementById('category').value
+                    })
+                });
 
-            if (!res.ok) throw new Error();
+                if (!res.ok) throw new Error();
 
-            form.reset();
-            loadExpenses();
+                form.reset();
+                loadExpenses();
 
-        } catch (err) {
-            console.log("Add error:", err);
-        }
-    });
+            } catch (err) {
+                console.log("Add error:", err);
+            }
+        });
+    }
 
     // ================= DELETE =================
     async function deleteExpense(e) {
@@ -337,11 +348,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ================= LOGOUT =================
-    logoutBtn?.addEventListener("click", () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('name');
-        location.reload();
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('name');
+            location.reload();
+        });
+    }
 
     // ================= INIT =================
     checkAuth();
