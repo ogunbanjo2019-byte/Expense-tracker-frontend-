@@ -100,11 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
+    try {
         const res = await fetch(`${BASE_URL}/auth/login`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: document.getElementById('login-email').value,
                 password: document.getElementById('login-password').value
@@ -113,13 +114,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await res.json();
 
-        if (res.ok) {
-            showMessage(loginMessage, "Login successful", "green");
-        } else {
-            showMessage(loginMessage, data.message);
-        }
-    });
+        if (res.ok && data.token) {
+            // ✅ SAVE TOKEN
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("name", data.user?.name || "User");
 
+            // ✅ HIDE LOGIN
+            authContainer.style.display = "none";
+
+            // ✅ SHOW APP
+            appContainer.style.display = "block";
+
+            // ✅ LOAD DATA (IMPORTANT)
+            loadExpenses();
+
+        } else {
+            showMessage(loginMessage, data.message || "Login failed");
+        }
+
+    } catch {
+        showMessage(loginMessage, "Server error");
+    }
+});
     // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
