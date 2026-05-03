@@ -1,40 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
     const logoutBtn = document.getElementById("logout-btn");
-
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
     const showForgot = document.getElementById('show-forgot');
     const backLogin = document.getElementById('back-login');
-
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     const forgotForm = document.getElementById('forgot-form');
-
     const loginMessage = document.getElementById('login-message');
     const signupMessage = document.getElementById('signup-message');
     const forgotMessage = document.getElementById('forgot-message');
-
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app');
-
     const welcomeScreen = document.getElementById("welcome-screen");
     const welcomeText = document.getElementById("welcome-text");
-
     const form = document.getElementById('form');
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
-
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem("token");
     let inactivityTimer;
     let listenersAdded = false;
 
-    // ================= INACTIVITY LOGOUT =================
     function startInactivityTimer() {
         resetTimer();
 
@@ -57,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300000); // 5 minutes
     }
 
-    // ================= WELCOME SCREEN =================
     function showWelcomeScreen() {
         const name = localStorage.getItem("name") || "User";
 
@@ -84,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 2000);
     }
 
-    // ================= SWITCH VIEW =================
     function switchView(view) {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
@@ -118,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => el.textContent = "", 3000);
     }
 
-    // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -149,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -178,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= FORGOT PASSWORD =================
     forgotForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -204,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= LOAD EXPENSES =================
     async function loadExpenses() {
         const token = localStorage.getItem("token");
 
@@ -244,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ================= ADD EXPENSE =================
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -274,7 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
@@ -282,10 +265,9 @@ document.addEventListener("DOMContentLoaded", () => {
         clearTimeout(inactivityTimer);
 
         alert("Logged out successfully");
-        location.reload(); // 🔥 clean reset
+        location.reload();
     });
 
-    // ================= AUTO LOGIN =================
     if (token) {
         showWelcomeScreen();
     }
