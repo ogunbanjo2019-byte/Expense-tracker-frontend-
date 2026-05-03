@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
 
+    const resetLink = `https://https://expense-tracker-frontend-delta-eight.vercel.app/#/reset.html?token=${resetToken}`;
+
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem('token');
@@ -274,6 +276,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+//reset passsword
+forgotForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("forgot-email").value;
+
+    try {
+        const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            showMessage(forgotMessage, "Reset link sent to your email", "green");
+        } else {
+            showMessage(forgotMessage, data.message || "Error sending email");
+        }
+
+    } catch (err) {
+        console.log(err);
+        showMessage(forgotMessage, "Server error");
+    }
+});
 // deleteExpense
 
 async function deleteExpense(e) {
