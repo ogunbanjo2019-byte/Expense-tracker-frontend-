@@ -27,6 +27,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem("token");
+    let inactivityTimer;
+
+    // ================= INACTIVITY LOGOUT =================
+    function startInactivityTimer() {
+        resetTimer();
+
+        ["click", "mousemove", "keydown", "scroll"].forEach(event => {
+            document.addEventListener(event, resetTimer);
+        });
+    }
+
+    function resetTimer() {
+        clearTimeout(inactivityTimer);
+
+        inactivityTimer = setTimeout(() => {
+            localStorage.removeItem("token");
+            alert("Session expired. Please login again.");
+            location.reload();
+        }, 300000); // 5 minutes
+    }
 
     // ================= SWITCH VIEW =================
     function switchView(view) {
@@ -85,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 appContainer.style.display = "block";
 
                 loadExpenses();
+                startInactivityTimer(); // ✅ START TIMER
 
             } else {
                 showMessage(loginMessage, data.message);
@@ -152,86 +173,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
-    const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const expenses = await res.json();
+
+            list.innerHTML = "";
+            let total = 0;
+
+            if (!expenses.length) {
+                list.innerHTML = "<li>No expenses yet</li>";
+                totalDisplay.textContent = 0;
+                return;
             }
-        });
 
-        const expenses = await res.json();
-        console.log("EXPENSES:", expenses); // 👈 CHECK THIS
+            expenses.forEach(exp => {
+                const li = document.createElement("li");
 
-        list.innerHTML = "";
-        let total = 0;
+                li.innerHTML = `
+                    ${exp.description} - ₦${exp.amount} (${exp.category})
+                `;
 
-        if (!expenses.length) {
-            list.innerHTML = "<li>No expenses yet</li>";
-            totalDisplay.textContent = 0;
-            return;
+                list.appendChild(li);
+                total += Number(exp.amount);
+            });
+
+            totalDisplay.textContent = total;
+
+        } catch (err) {
+            console.log("LOAD ERROR:", err);
         }
-
-        expenses.forEach(exp => {
-            const li = document.createElement("li");
-
-            li.innerHTML = `
-                ${exp.description} - ₦${exp.amount} (${exp.category})
-            `;
-
-            list.appendChild(li);
-            total += Number(exp.amount);
-        });
-
-        totalDisplay.textContent = total;
-
-    } catch (err) {
-        console.log("LOAD ERROR:", err);
     }
-}
 
     // ================= ADD EXPENSE =================
     form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
 
-    try {
-        const res = await fetch(`${BASE_URL}/expenses`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                description: document.getElementById("desc").value,
-                amount: document.getElementById("amount").value,
-                category: document.getElementById("category").value
-            })
-        });
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    description: document.getElementById("desc").value,
+                    amount: document.getElementById("amount").value,
+                    category: document.getElementById("category").value
+                })
+            });
 
-        const data = await res.json();
-        console.log("ADD RESPONSE:", data); // 👈 VERY IMPORTANT
+            if (!res.ok) return;
 
-        if (!res.ok) {
-            console.log("Error adding expense");
-            return;
+            form.reset();
+            loadExpenses();
+
+        } catch (err) {
+            console.log("ADD ERROR:", err);
         }
-
-        form.reset();
-        loadExpenses();
-
-    } catch (err) {
-        console.log("ADD ERROR:", err);
-    }
-});
+    });
 
     // ================= AUTO LOGIN =================
     if (token) {
         authContainer.style.display = "none";
         appContainer.style.display = "block";
         loadExpenses();
+        startInactivityTimer(); // ✅ ALSO START HERE
     }
 
 });
