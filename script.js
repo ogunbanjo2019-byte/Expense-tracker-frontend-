@@ -11,28 +11,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    const forgotForm = document.getElementById('forgot-form');
 
     const loginMessage = document.getElementById('login-message');
     const signupMessage = document.getElementById('signup-message');
-    const forgotMessage = document.getElementById('forgot-message');
 
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app');
     const logoutBtn = document.getElementById('logout-btn');
     const form = document.getElementById('form');
 
+    const list = document.getElementById('list');
+    const totalDisplay = document.getElementById('total');
+
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem('token');
     let inactivityTimer;
+    let listenersAdded = false;
 
+    // ================= INACTIVITY TIMER =================
     function startInactivityTimer() {
         resetInactivityTimer();
 
-        ["click", "mousemove", "keydown", "scroll"].forEach(event => {
-            document.addEventListener(event, resetInactivityTimer);
-        });
+        if (!listenersAdded) {
+            ["click", "mousemove", "keydown", "scroll"].forEach(event => {
+                document.addEventListener(event, resetInactivityTimer);
+            });
+            listenersAdded = true;
+        }
     }
 
     function resetInactivityTimer() {
@@ -41,28 +47,24 @@ document.addEventListener("DOMContentLoaded", () => {
         inactivityTimer = setTimeout(() => {
             localStorage.removeItem("token");
             localStorage.removeItem("name");
-
             alert("Logged out due to inactivity");
-
             location.reload();
-        }, 10000); 
+        }, 300000); // 5 minutes
     }
 
+    // ================= UI HELPERS =================
     function showMessage(element, text, color = "red") {
         if (!element) return;
         element.textContent = text;
         element.style.color = color;
 
-        setTimeout(() => {
-            element.textContent = "";
-        }, 3000);
+        setTimeout(() => element.textContent = "", 3000);
     }
 
     function switchView(view) {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
         forgotBox.style.display = "none";
-
         view.style.display = "block";
     }
 
@@ -76,16 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
         switchView(loginBox);
     });
 
-    showForgot?.addEventListener("click", (e) => {
-        e.preventDefault();
-        switchView(forgotBox);
-    });
-
     backLogin?.addEventListener("click", (e) => {
         e.preventDefault();
         switchView(loginBox);
     });
 
+    // ================= WELCOME =================
     function showWelcomeScreen() {
         const name = localStorage.getItem("name") || "User";
 
@@ -101,12 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
             welcomeScreen.style.display = "none";
             appContainer.style.display = "block";
             loadExpenses();
-
             startInactivityTimer();
-
         }, 2000);
     }
 
+    // ================= AUTH CHECK =================
     async function checkAuth() {
         const storedToken = localStorage.getItem('token');
 
@@ -126,10 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error();
 
             token = storedToken;
-
             authContainer.style.display = "none";
-            appContainer.style.display = "none";
-
             showWelcomeScreen();
 
         } catch {
@@ -139,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -156,15 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (res.ok && data.token) {
                 localStorage.setItem('token', data.token);
-
-                if (data.user?.name) {
-                    localStorage.setItem("name", data.user.name);
-                }
+                localStorage.setItem("name", data.user?.name || "User");
 
                 token = data.token;
-
                 authContainer.style.display = "none";
-                appContainer.style.display = "none";
 
                 showWelcomeScreen();
 
@@ -172,12 +162,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 showMessage(loginMessage, data.message || "Login failed");
             }
 
-        } catch (err) {
-            console.log(err);
+        } catch {
             showMessage(loginMessage, "Server error");
         }
     });
 
+    // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -201,19 +191,77 @@ document.addEventListener("DOMContentLoaded", () => {
                 showMessage(signupMessage, data.message || "Signup failed");
             }
 
-        } catch (err) {
-            console.log(err);
+        } catch {
             showMessage(signupMessage, "Server error");
         }
     });
 
+    // ================= LOAD EXPENSES =================
+    async function loadExpenses() {
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) throw new Error();
+
+            const expenses = await res.json();
+
+            list.innerHTML = "";
+            let total = 0;
+
+            expenses.forEach(exp => {
+                const li = document.createElement("li");
+                li.textContent = `${exp.description} - ₦${exp.amount} (${exp.category})`;
+                list.appendChild(li);
+                total += Number(exp.amount);
+            });
+
+            totalDisplay.textContent = total;
+
+        } catch (err) {
+            console.log("Load error:", err);
+        }
+    }
+
+    // ================= ADD EXPENSE =================
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch(`${BASE_URL}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    description: document.getElementById('desc').value,
+                    amount: document.getElementById('amount').value,
+                    category: document.getElementById('category').value
+                })
+            });
+
+            if (!res.ok) throw new Error();
+
+            form.reset();
+            loadExpenses();
+
+        } catch (err) {
+            console.log("Add error:", err);
+        }
+    });
+
+    // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem('token');
         localStorage.removeItem('name');
-        token = null;
-        checkAuth();
+        location.reload();
     });
 
+    // ================= INIT =================
     checkAuth();
 
 });
