@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
+    const forgotMessage = document.getElementById('forgot-message');
 
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
@@ -206,33 +207,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ================= FORGOT PASSWORD =================
-    forgotForm?.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  forgotForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const email = document.getElementById("forgot-email").value;
+    const email = document.getElementById("forgot-email").value;
 
-        try {
-            const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email })
-            });
+    try {
+        const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        });
 
-            const data = await res.json();
+        const data = await res.json();
 
-            if (res.ok) {
-                showMessage(forgotMessage, "Reset link sent to your email", "green");
-            } else {
-                showMessage(forgotMessage, data.message || "Error sending email");
-            }
+        console.log("Response:", data); // 👈 ADD THIS
 
-        } catch (err) {
-            console.log(err);
-            showMessage(forgotMessage, "Server error");
+        if (res.ok) {
+            showMessage(forgotMessage, data.message, "green");
+        } else {
+            showMessage(forgotMessage, data.message || "Error sending email");
         }
-    });
+
+    } catch (err) {
+        console.log(err);
+        showMessage(forgotMessage, "Server error");
+    }
+});
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
