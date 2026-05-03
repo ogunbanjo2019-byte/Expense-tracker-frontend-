@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
 
-    const resetLink = `https://expense-tracker-frontend-delta-eight.vercel.app/reset.html?token=${resetToken}`;
+    const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem('token');
     let inactivityTimer;
@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         view.style.display = "block";
     }
 
+    // ================= NAVIGATION =================
     showSignup?.addEventListener("click", (e) => {
         e.preventDefault();
         switchView(signupBox);
@@ -82,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showForgot?.addEventListener("click", (e) => {
         e.preventDefault();
+        console.log("Forgot clicked"); // debug
         switchView(forgotBox);
     });
 
