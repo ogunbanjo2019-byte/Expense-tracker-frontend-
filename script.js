@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
         element.textContent = text;
         element.style.color = color;
 
-        setTimeout(() => {
-            element.textContent = "";
-        }, 3000);
+        // setTimeout(() => {
+        //     element.textContent = "";
+        // }, 3000);
     }
 
     function switchView(view) {
@@ -97,14 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeText.textContent = `Welcome, ${name}`;
         welcomeScreen.style.display = "flex";
 
-        // setTimeout(() => {
-        //     welcomeScreen.style.display = "none";
-        //     appContainer.style.display = "block";
-        //     loadExpenses();
+        setTimeout(() => {
+            welcomeScreen.style.display = "none";
+            appContainer.style.display = "block";
+            loadExpenses();
 
-        //     startInactivityTimer();
+            startInactivityTimer();
 
-        // }, 2000);
+        }, 2000);
     }
 
     async function checkAuth() {
