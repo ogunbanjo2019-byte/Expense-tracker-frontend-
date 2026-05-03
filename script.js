@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginBox = document.getElementById('login-box');
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
-    const forgotMessage = document.getElementById('forgot-message');
 
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
@@ -32,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let inactivityTimer;
     let listenersAdded = false;
 
+    // 🔍 DEBUG
+    console.log("Elements:", showForgot, forgotBox);
+
     // ================= INACTIVITY TIMER =================
     function startInactivityTimer() {
         resetInactivityTimer();
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.removeItem("name");
             alert("Logged out due to inactivity");
             location.reload();
-        }, 300000); // 5 minutes
+        }, 300000);
     }
 
     // ================= UI HELPERS =================
@@ -68,7 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
         forgotBox.style.display = "none";
-        view.style.display = "block";
+
+        if (view) view.style.display = "block";
     }
 
     // ================= NAVIGATION =================
@@ -84,8 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showForgot?.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log("Forgot clicked"); // debug
-        switchView(forgotBox);
+        console.log("Forgot clicked");
+
+        loginBox.style.display = "none";
+        signupBox.style.display = "none";
+        forgotBox.style.display = "block";
     });
 
     backLogin?.addEventListener("click", (e) => {
@@ -207,35 +213,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ================= FORGOT PASSWORD =================
-  forgotForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    forgotForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const email = document.getElementById("forgot-email").value;
+        const email = document.getElementById("forgot-email").value;
 
-    try {
-        const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email })
-        });
+        try {
+            const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        console.log("Response:", data); // 👈 ADD THIS
+            console.log("Response:", data);
 
-        if (res.ok) {
-            showMessage(forgotMessage, data.message, "green");
-        } else {
-            showMessage(forgotMessage, data.message || "Error sending email");
+            if (res.ok) {
+                showMessage(forgotMessage, data.message, "green");
+            } else {
+                showMessage(forgotMessage, data.message || "Error sending email");
+            }
+
+        } catch (err) {
+            console.log(err);
+            showMessage(forgotMessage, "Server error");
         }
-
-    } catch (err) {
-        console.log(err);
-        showMessage(forgotMessage, "Server error");
-    }
-});
+    });
 
     // ================= LOAD EXPENSES =================
     async function loadExpenses() {
