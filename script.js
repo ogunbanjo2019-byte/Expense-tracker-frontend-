@@ -17,12 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const signupMessage = document.getElementById('signup-message');
     const forgotMessage = document.getElementById('forgot-message');
 
-    // ✅ FIXED HERE
     const authWrapper = document.getElementById("auth-wrapper");
-
     const appContainer = document.getElementById('app');
-    const welcomeScreen = document.getElementById("welcome-screen");
-    const welcomeText = document.getElementById("welcome-text");
 
     const form = document.getElementById('form');
     const list = document.getElementById('list');
@@ -31,66 +27,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem("token");
-    let inactivityTimer;
-    let listenersAdded = false;
 
     // Hide app initially
     appContainer.style.display = "none";
 
-    function startInactivityTimer() {
-        resetTimer();
-
-        if (!listenersAdded) {
-            ["click", "mousemove", "keydown", "scroll"].forEach(event => {
-                document.addEventListener(event, resetTimer);
-            });
-            listenersAdded = true;
-        }
-    }
-
-    function resetTimer() {
-        clearTimeout(inactivityTimer);
-
-        inactivityTimer = setTimeout(() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("name");
-            alert("Session expired. Please login again.");
-            location.reload();
-        }, 300000);
-    }
-
-    function showWelcomeScreen() {
-        const name = localStorage.getItem("name") || "User";
-
-        welcomeText.textContent = `Welcome, ${name}`;
-
-        // ✅ hide full auth layout
-        authWrapper.style.display = "none";
-
-        welcomeScreen.classList.add("show");
-
-        setTimeout(() => {
-            welcomeScreen.classList.remove("show");
-            welcomeScreen.classList.add("hide");
-
-            setTimeout(() => {
-                welcomeScreen.style.display = "none";
-
-                appContainer.style.display = "block";
-                appContainer.classList.add("show");
-
-                loadExpenses();
-                startInactivityTimer();
-
-            }, 800);
-
-        }, 2000);
-    }
-
+    // ================= VIEW SWITCH =================
     function switchView(view) {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
         forgotBox.style.display = "none";
+
         view.style.display = "block";
     }
 
@@ -114,23 +60,26 @@ document.addEventListener("DOMContentLoaded", () => {
         switchView(loginBox);
     });
 
+    // ================= MESSAGE =================
     function showMessage(el, text, color = "red") {
+        if (!el) return;
         el.textContent = text;
         el.style.color = color;
         setTimeout(() => el.textContent = "", 3000);
     }
 
+    // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const email = document.getElementById("login-email")?.value;
+        const password = document.getElementById("login-password")?.value;
 
         try {
             const res = await fetch(`${BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email: document.getElementById("login-email").value,
-                    password: document.getElementById("login-password").value
-                })
+                body: JSON.stringify({ email, password })
             });
 
             const data = await res.json();
@@ -138,7 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok && data.token) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("name", data.user?.name || "User");
-                showWelcomeScreen();
+
+                authWrapper.style.display = "none";
+                appContainer.style.display = "block";
+
+                loadExpenses();
             } else {
                 showMessage(loginMessage, data.message);
             }
@@ -148,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -156,9 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
-                    name: document.getElementById("signup-name").value,
-                    email: document.getElementById("signup-email").value,
-                    password: document.getElementById("signup-password").value
+                    name: document.getElementById("signup-name")?.value,
+                    email: document.getElementById("signup-email")?.value,
+                    password: document.getElementById("signup-password")?.value
                 })
             });
 
@@ -176,16 +130,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ================= FORGOT =================
     forgotForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        const email = document.getElementById("forgot-email").value;
 
         try {
             const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ email })
+                body: JSON.stringify({
+                    email: document.getElementById("forgot-email")?.value
+                })
             });
 
             const data = await res.json();
@@ -201,14 +156,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ================= LOAD EXPENSES =================
     async function loadExpenses() {
         const token = localStorage.getItem("token");
 
         try {
             const res = await fetch(`${BASE_URL}/expenses`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             const expenses = await res.json();
@@ -216,16 +170,11 @@ document.addEventListener("DOMContentLoaded", () => {
             list.innerHTML = "";
             let total = 0;
 
-            if (!expenses.length) {
-                totalDisplay.textContent = 0;
-                return;
-            }
-
             expenses.forEach(exp => {
                 const li = document.createElement("li");
 
                 li.innerHTML = `
-                    ${exp.description} - ₦${exp.amount} (${exp.category})
+                    ${exp.description} - ₦${exp.amount}
                     <button onclick="deleteExpense('${exp._id}')">Delete</button>
                 `;
 
@@ -236,17 +185,18 @@ document.addEventListener("DOMContentLoaded", () => {
             totalDisplay.textContent = total;
 
         } catch (err) {
-            console.log("LOAD ERROR:", err);
+            console.log(err);
         }
     }
 
+    // ================= ADD =================
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const token = localStorage.getItem("token");
 
         try {
-            const res = await fetch(`${BASE_URL}/expenses`, {
+            await fetch(`${BASE_URL}/expenses`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -259,44 +209,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            if (!res.ok) return;
-
             form.reset();
             loadExpenses();
 
-        } catch (err) {
-            console.log("ADD ERROR:", err);
-        }
+        } catch (err) {}
     });
 
+    // ================= DELETE =================
     window.deleteExpense = async function(id) {
         const token = localStorage.getItem("token");
 
-        try {
-            const res = await fetch(`${BASE_URL}/expenses/${id}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+        await fetch(`${BASE_URL}/expenses/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+        });
 
-            if (res.ok) loadExpenses();
-
-        } catch (err) {}
+        loadExpenses();
     };
 
-    // LOGOUT
+    // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        clearTimeout(inactivityTimer);
+        localStorage.clear();
 
         appContainer.style.display = "none";
         authWrapper.style.display = "flex";
     });
 
-    // AUTO LOGIN
+    // ================= AUTO LOGIN =================
     if (token) {
-        showWelcomeScreen();
+        authWrapper.style.display = "none";
+        appContainer.style.display = "block";
+        loadExpenses();
     }
 });
