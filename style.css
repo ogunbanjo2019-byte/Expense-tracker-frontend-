@@ -4,27 +4,41 @@
   box-sizing: border-box;
 }
 
+/* ================= BODY ================= */
 body {
   font-family: Arial, sans-serif;
   background: #f0f2f5;
+  padding: 10px;
 }
 
-/* AUTH */
+/* ================= AUTH ================= */
+
 #auth-wrapper {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
 }
 
+/* LEFT PANEL */
 .left-panel {
   flex: 1;
   background: #1f7a4c;
   color: white;
-  padding: 60px;
+  padding: clamp(30px, 5vw, 60px);
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
+.left-panel h1 {
+  font-size: clamp(22px, 3vw, 30px);
+  margin-bottom: 10px;
+}
+
+.left-panel p {
+  font-size: clamp(14px, 2vw, 16px);
+}
+
+/* RIGHT PANEL */
 .right-panel {
   flex: 1;
   display: flex;
@@ -32,21 +46,23 @@ body {
   align-items: center;
 }
 
+/* AUTH BOX */
 #auth-container {
   width: 100%;
   max-width: 350px;
 }
 
-/* ALL AUTH BOXES */
+/* ALL AUTH CARDS */
 #login-box,
 #signup-box,
 #forgot-box {
   background: #fff;
-  padding: 30px;
+  padding: 25px;
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
+/* TITLES */
 #auth-container h2 {
   text-align: center;
   margin-bottom: 20px;
@@ -67,8 +83,10 @@ body {
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  width: 100%;
 }
 
+/* BUTTONS */
 #login-form button,
 #signup-form button,
 #forgot-form button {
@@ -86,6 +104,7 @@ body {
   background: #219150;
 }
 
+/* LINKS */
 #auth-container p {
   text-align: center;
   margin-top: 10px;
@@ -96,52 +115,61 @@ body {
   text-decoration: none;
 }
 
-/* APP */
 /* ================= DASHBOARD ================= */
 
 #app {
   display: none;
+  width: 100%;
   max-width: 600px;
   margin: 40px auto;
   background: #ffffff;
-  padding: 25px;
+  padding: clamp(15px, 3vw, 25px);
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-/* TITLE */
+/* TITLES */
 #app h1 {
   text-align: center;
-  margin-bottom: 5px;
+  font-size: clamp(20px, 3vw, 28px);
 }
 
 #app h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #27ae60;
+  font-size: clamp(16px, 2.5vw, 22px);
 }
 
-/* FORM LAYOUT (🔥 THIS IS THE MAIN FIX) */
+/* ================= FORM ================= */
+
+/* 🔥 GRID = BEST RESPONSIVE */
 #form {
-  display: flex;
-  flex-direction: column;   /* stack nicely */
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-/* INPUTS FULL WIDTH */
+/* full width fields */
+#desc {
+  grid-column: span 2;
+}
+
+#form button {
+  grid-column: span 2;
+}
+
+/* INPUTS */
 #form input,
 #form select {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 14px;
 }
 
-/* BUTTON FULL WIDTH */
+/* BUTTON */
 #form button {
-  width: 100%;
-  padding: 12px;
   background: #27ae60;
   color: #fff;
   border: none;
@@ -154,11 +182,11 @@ body {
   background: #219150;
 }
 
-/* EXPENSE LIST */
+/* ================= LIST ================= */
+
 #list {
   margin-top: 20px;
   list-style: none;
-  padding: 0;
 }
 
 #list li {
@@ -171,9 +199,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
-/* DELETE BUTTON */
+/* DELETE */
 #list button {
   background: #e74c3c;
   border: none;
@@ -183,7 +212,7 @@ body {
   cursor: pointer;
 }
 
-/* LOGOUT BUTTON */
+/* LOGOUT */
 #logout-btn {
   margin-top: 20px;
   width: 100%;
@@ -199,7 +228,9 @@ body {
 #logout-btn:hover {
   background: #c0392b;
 }
-/* MOBILE */
+
+/* ================= MOBILE ================= */
+
 @media (max-width: 768px) {
   #auth-wrapper {
     flex-direction: column;
@@ -208,8 +239,26 @@ body {
   .left-panel {
     display: none;
   }
+}
+
+/* 🔥 STACK EVERYTHING ON SMALL PHONES */
+@media (max-width: 500px) {
 
   #form {
+    grid-template-columns: 1fr;
+  }
+
+  #desc,
+  #form button {
+    grid-column: span 1;
+  }
+
+  #list li {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #list button {
+    align-self: flex-end;
   }
 }
