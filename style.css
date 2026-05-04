@@ -57,6 +57,31 @@ body {
   max-width: 350px;
 }
 
+/* 🔥 FIX: MAKE FORMS STACK PROPERLY */
+#login-form,
+#signup-form,
+#forgot-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🔥 FIX: INPUT FULL WIDTH */
+#login-form input,
+#signup-form input,
+#forgot-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* 🔥 FIX: BUTTON FULL WIDTH & BELOW */
+#login-form button,
+#signup-form button,
+#forgot-form button {
+  width: 100%;
+}
+
+/* AUTH CARDS */
 #login-box,
 #signup-box,
 #forgot-box {
@@ -90,7 +115,7 @@ h1, h2 {
 #form {
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap;            /* 🔥 FIXED */
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
@@ -208,39 +233,6 @@ button:hover {
   text-decoration: underline;
 }
 
-/* ================= WELCOME SCREEN ================= */
-
-#welcome-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: #ffffff;
-  color: #27ae60;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  font-weight: bold;
-  z-index: 9999;
-}
-
-#welcome-text {
-  display: inline-block;
-  animation: spin360 0.8s ease-out, settle 2s ease 0.8s forwards;
-}
-
-@keyframes spin360 {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes settle {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(390deg); }
-}
-
 /* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
@@ -252,7 +244,6 @@ button:hover {
     display: none;
   }
 
-  /* allow stacking on small screens */
   #form {
     flex-wrap: wrap;
   }
