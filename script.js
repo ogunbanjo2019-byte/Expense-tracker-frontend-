@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 li.innerHTML = `
                     ${exp.description} - ₦${exp.amount} (${exp.category})
                     <button 
-                        style="margin-left:10px; color:red; border:none; cursor:pointer;"
+                        style="margin-left:10px; color:white; border:none; cursor:pointer;"
                         onclick="deleteExpense('${exp._id}')"
                     >
                         Delete
