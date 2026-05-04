@@ -4,20 +4,17 @@
   box-sizing: border-box;
 }
 
-/* BODY */
 body {
   font-family: Arial, sans-serif;
   background: #f0f2f5;
 }
 
-/* ================= AUTH LAYOUT ================= */
-
+/* AUTH */
 #auth-wrapper {
   display: flex;
   height: 100vh;
 }
 
-/* LEFT PANEL */
 .left-panel {
   flex: 1;
   background: #1f7a4c;
@@ -28,17 +25,6 @@ body {
   justify-content: center;
 }
 
-.left-panel h1 {
-  font-size: 32px;
-  margin-bottom: 15px;
-}
-
-.left-panel p {
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-/* RIGHT PANEL */
 .right-panel {
   flex: 1;
   display: flex;
@@ -46,39 +32,46 @@ body {
   align-items: center;
 }
 
-/* AUTH CARD */
 #auth-container {
   width: 100%;
   max-width: 350px;
 }
 
-#login-box {
+/* ALL AUTH BOXES */
+#login-box,
+#signup-box,
+#forgot-box {
   background: #fff;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-#login-box h2 {
+#auth-container h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* FORM */
-#login-form {
+/* FORMS */
+#login-form,
+#signup-form,
+#forgot-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-#login-form input {
+#login-form input,
+#signup-form input,
+#forgot-form input {
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-size: 14px;
 }
 
-#login-form button {
+#login-form button,
+#signup-form button,
+#forgot-form button {
   padding: 12px;
   background: #27ae60;
   color: white;
@@ -87,12 +80,23 @@ body {
   cursor: pointer;
 }
 
-#login-form button:hover {
+#login-form button:hover,
+#signup-form button:hover,
+#forgot-form button:hover {
   background: #219150;
 }
 
-/* ================= DASHBOARD ================= */
+#auth-container p {
+  text-align: center;
+  margin-top: 10px;
+}
 
+#auth-container a {
+  color: #27ae60;
+  text-decoration: none;
+}
+
+/* APP */
 #app {
   display: none;
   max-width: 600px;
@@ -100,46 +104,26 @@ body {
   background: white;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
-
-/* TITLES */
-#app h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-#app h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* ================= EXPENSE FORM ================= */
 
 #form {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
-/* make all inputs equal */
 #form input,
 #form select {
   flex: 1;
   padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
 }
 
-/* BUTTON */
 #form button {
-  padding: 10px 15px;
+  padding: 10px;
+  border: 2px solid #27ae60;
   background: white;
   color: #27ae60;
-  border: 2px solid #27ae60;
   border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap;
 }
 
 #form button:hover {
@@ -147,40 +131,7 @@ body {
   color: white;
 }
 
-/* ================= LIST ================= */
-
-#list {
-  list-style: none;
-}
-
-#list li {
-  background: #fafafa;
-  padding: 10px;
-  border-left: 5px solid #27ae60;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* LOGOUT */
-#logout-btn {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 15px;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#logout-btn:hover {
-  background: #c0392b;
-}
-
-/* ================= MOBILE ================= */
-
+/* MOBILE */
 @media (max-width: 768px) {
   #auth-wrapper {
     flex-direction: column;
