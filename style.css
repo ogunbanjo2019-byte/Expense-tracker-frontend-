@@ -85,13 +85,28 @@ h1, h2 {
   color: #2c3e50;
 }
 
-/* FORM */
+/* ================= FORM FIX ================= */
+
 #form {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;            /* 🔥 FIXED */
   justify-content: center;
+  align-items: center;
   margin-top: 10px;
+}
+
+/* INPUT SIZES */
+#desc {
+  width: 40%;
+}
+
+#amount {
+  width: 25%;
+}
+
+#category {
+  width: 25%;
 }
 
 /* INPUTS */
@@ -113,6 +128,7 @@ button {
   cursor: pointer;
   transition: 0.3s;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 button:hover {
@@ -234,6 +250,17 @@ button:hover {
 
   .left-panel {
     display: none;
+  }
+
+  /* allow stacking on small screens */
+  #form {
+    flex-wrap: wrap;
+  }
+
+  #desc,
+  #amount,
+  #category {
+    width: 100%;
   }
 }
 
