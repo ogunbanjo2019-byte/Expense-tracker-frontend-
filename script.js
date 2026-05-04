@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const forgotBox = document.getElementById('forgot-box');
     const logoutBtn = document.getElementById("logout-btn");
 
+    console.log("loginForm:", document.getElementById("login-form"));
+console.log("email input:", document.getElementById("login-email"));
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
     const showForgot = document.getElementById('show-forgot');
