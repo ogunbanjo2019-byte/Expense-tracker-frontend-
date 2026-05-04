@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById('form');
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
+
     const BASE_URL = "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
     let token = localStorage.getItem("token");
@@ -45,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.removeItem("name");
             alert("Session expired. Please login again.");
             location.reload();
-        }, 300000); // 5 minutes
+        }, 300000);
     }
 
     function showWelcomeScreen() {
@@ -125,9 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok && data.token) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("name", data.user?.name || "User");
-
                 showWelcomeScreen();
-
             } else {
                 showMessage(loginMessage, data.message);
             }
@@ -180,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
 
             if (res.ok) {
-                showMessage(forgotMessage, "Reset link sent! Check your email.", "green");
+                showMessage(forgotMessage, "Reset link sent!", "green");
             } else {
                 showMessage(forgotMessage, data.message);
             }
@@ -190,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ✅ FIXED: LOAD WITH DELETE BUTTON
     async function loadExpenses() {
         const token = localStorage.getItem("token");
 
@@ -216,6 +216,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 li.innerHTML = `
                     ${exp.description} - ₦${exp.amount} (${exp.category})
+                    <button 
+                        style="margin-left:10px; color:red; border:none; cursor:pointer;"
+                        onclick="deleteExpense('${exp._id}')"
+                    >
+                        Delete
+                    </button>
                 `;
 
                 list.appendChild(li);
@@ -258,12 +264,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ✅ GLOBAL DELETE FUNCTION
+    window.deleteExpense = async function(id) {
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`${BASE_URL}/expenses/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (res.ok) {
+                loadExpenses();
+            } else {
+                console.log("Delete failed");
+            }
+
+        } catch (err) {
+            console.log("DELETE ERROR:", err);
+        }
+    };
+
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
-
         clearTimeout(inactivityTimer);
-
         alert("Logged out successfully");
         location.reload();
     });
@@ -271,5 +298,4 @@ document.addEventListener("DOMContentLoaded", () => {
     if (token) {
         showWelcomeScreen();
     }
-
 });
