@@ -4,24 +4,31 @@
   box-sizing: border-box;
 }
 
+/* BODY */
 body {
   background: #f0f2f5;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
-/* AUTH */
+/* ================= AUTH LAYOUT ================= */
+
 #auth-wrapper {
   display: flex;
   height: 100vh;
 }
 
+/* LEFT PANEL */
 .left-panel {
   flex: 1;
   background: #1f7a4c;
   color: white;
-  padding: 40px;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+/* RIGHT PANEL */
 .right-panel {
   flex: 1;
   display: flex;
@@ -29,67 +36,177 @@ body {
   align-items: center;
 }
 
+/* AUTH CARD */
 #auth-container {
-  width: 300px;
+  width: 100%;
+  max-width: 350px;
 }
 
-#login-box {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
+/* BOXES */
+#login-box,
+#signup-box,
+#forgot-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* DASHBOARD */
+/* HEADINGS */
+#auth-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* FORMS */
+#login-form,
+#signup-form,
+#forgot-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* INPUTS */
+#login-form input,
+#signup-form input,
+#forgot-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* BUTTON */
+#login-form button,
+#signup-form button,
+#forgot-form button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #27ae60;
+  color: white;
+  cursor: pointer;
+}
+
+#login-form button:hover,
+#signup-form button:hover,
+#forgot-form button:hover {
+  background: #219150;
+}
+
+/* LINKS */
+#auth-container p {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+#auth-container a {
+  color: #27ae60;
+  text-decoration: none;
+}
+
+/* ================= DASHBOARD ================= */
+
 #app {
+  display: none;
   max-width: 600px;
   margin: 40px auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* 🔥 THE REAL FIX IS HERE */
+/* TITLES */
+h1, h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* ================= EXPENSE FORM ================= */
+
 #form {
   display: flex;
   gap: 10px;
-  align-items: center;
-}
-
-/* 🔥 FORCE EVERYTHING TO FIT */
-#form input,
-#form select {
-  flex: 1;           /* auto resize */
-  min-width: 0;      /* prevent overflow */
-}
-
-/* 🔥 BUTTON SIZE CONTROL */
-#form button {
-  flex: 0 0 auto;
-  padding: 8px 12px;
-}
-
-/* GENERAL INPUT */
-input, select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* LIST */
-#list {
   margin-top: 20px;
 }
 
-#list li {
-  display: flex;
-  justify-content: space-between;
-  background: #eee;
+/* MAKE INPUTS FLEXIBLE */
+#form input,
+#form select {
+  flex: 1;
   padding: 10px;
-  margin-bottom: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
-/* MOBILE FIX */
-@media (max-width: 600px) {
+/* BUTTON */
+#form button {
+  padding: 10px 15px;
+  background: white;
+  border: 2px solid #27ae60;
+  color: #27ae60;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#form button:hover {
+  background: #27ae60;
+  color: white;
+}
+
+/* ================= LIST ================= */
+
+#list {
+  margin-top: 20px;
+  list-style: none;
+}
+
+#list li {
+  background: #fafafa;
+  padding: 10px;
+  border-left: 5px solid #27ae60;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* DELETE BUTTON */
+#list button {
+  background: #e74c3c;
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* LOGOUT */
+#logout-btn {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 15px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  #auth-wrapper {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    display: none;
+  }
+
+  /* STACK FORM ON MOBILE */
   #form {
     flex-direction: column;
   }
