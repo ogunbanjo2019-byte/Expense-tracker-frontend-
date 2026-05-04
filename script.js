@@ -3,20 +3,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const signupBox = document.getElementById('signup-box');
     const forgotBox = document.getElementById('forgot-box');
     const logoutBtn = document.getElementById("logout-btn");
+
     const showSignup = document.getElementById('show-signup');
     const showLogin = document.getElementById('show-login');
     const showForgot = document.getElementById('show-forgot');
     const backLogin = document.getElementById('back-login');
+
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     const forgotForm = document.getElementById('forgot-form');
+
     const loginMessage = document.getElementById('login-message');
     const signupMessage = document.getElementById('signup-message');
     const forgotMessage = document.getElementById('forgot-message');
-    const authContainer = document.getElementById('auth-container');
+
+    const authWrapper = document.querySelector(".auth-wrapper"); // ✅ FIX
     const appContainer = document.getElementById('app');
     const welcomeScreen = document.getElementById("welcome-screen");
     const welcomeText = document.getElementById("welcome-text");
+
     const form = document.getElementById('form');
     const list = document.getElementById('list');
     const totalDisplay = document.getElementById('total');
@@ -26,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let token = localStorage.getItem("token");
     let inactivityTimer;
     let listenersAdded = false;
+
+    // ✅ Hide app at start
+    appContainer.style.display = "none";
 
     function startInactivityTimer() {
         resetTimer();
@@ -54,7 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         welcomeText.textContent = `Welcome, ${name}`;
 
-        authContainer.style.display = "none";
+        // ✅ FIX: hide ENTIRE auth layout
+        authWrapper.style.display = "none";
+
         welcomeScreen.classList.add("show");
 
         setTimeout(() => {
@@ -215,12 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 li.innerHTML = `
                     ${exp.description} - ₦${exp.amount} (${exp.category})
-                    <button 
-                        style="margin-left:10px; color:white; border:none; cursor:pointer;"
-                        onclick="deleteExpense('${exp._id}')"
-                    >
-                        Delete
-                    </button>
+                    <button onclick="deleteExpense('${exp._id}')">Delete</button>
                 `;
 
                 list.appendChild(li);
@@ -274,22 +279,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            if (res.ok) {
-                loadExpenses();
-            } else {
-            }
+            if (res.ok) loadExpenses();
 
         } catch (err) {}
     };
 
+    // ✅ CLEAN LOGOUT (no reload)
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
         clearTimeout(inactivityTimer);
-        alert("Logged out successfully");
-        location.reload();
+
+        appContainer.style.display = "none";
+        authWrapper.style.display = "flex";
     });
 
+    // ✅ Auto login
     if (token) {
         showWelcomeScreen();
     }
