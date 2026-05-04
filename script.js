@@ -189,7 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ✅ FIXED: LOAD WITH DELETE BUTTON
     async function loadExpenses() {
         const token = localStorage.getItem("token");
 
@@ -264,7 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ✅ GLOBAL DELETE FUNCTION
     window.deleteExpense = async function(id) {
         const token = localStorage.getItem("token");
 
@@ -279,12 +277,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 loadExpenses();
             } else {
-                console.log("Delete failed");
             }
 
-        } catch (err) {
-            console.log("DELETE ERROR:", err);
-        }
+        } catch (err) {}
     };
 
     logoutBtn?.addEventListener("click", () => {
