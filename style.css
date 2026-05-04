@@ -13,7 +13,7 @@ body {
 
 /* ================= AUTH LAYOUT ================= */
 
-.auth-wrapper {
+#auth-wrapper {
   display: flex;
   height: 100vh;
 }
@@ -70,10 +70,10 @@ body {
 
 #app {
   display: none;
-  max-width: 500px;        /* 🔥 reduced */
+  max-width: 500px;
   margin: 30px auto;
   background: #fff;
-  padding: 20px;           /* 🔥 reduced */
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
@@ -88,7 +88,7 @@ h1, h2 {
 /* FORM */
 #form {
   display: flex;
-  gap: 8px;                /* 🔥 tighter */
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 10px;
@@ -97,7 +97,7 @@ h1, h2 {
 /* INPUTS */
 input,
 select {
-  padding: 8px;            /* 🔥 smaller */
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 13px;
@@ -105,7 +105,7 @@ select {
 
 /* BUTTONS */
 button {
-  padding: 8px 12px;       /* 🔥 smaller */
+  padding: 8px 12px;
   background: #ffffff;
   color: #27ae60;
   border: 2px solid #27ae60;
@@ -127,7 +127,7 @@ button:hover {
   border: none;
   margin: 15px auto;
   display: block;
-  width: auto;             /* 🔥 no full width */
+  width: auto;
   padding: 8px 15px;
 }
 
@@ -145,7 +145,7 @@ button:hover {
 #list li {
   background: #fafafa;
   border-left: 5px solid #27ae60;
-  padding: 8px;            /* 🔥 smaller */
+  padding: 8px;
   border-radius: 6px;
   margin-bottom: 8px;
   display: flex;
@@ -228,7 +228,7 @@ button:hover {
 /* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
-  .auth-wrapper {
+  #auth-wrapper {
     flex-direction: column;
   }
 

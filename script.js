@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const signupMessage = document.getElementById('signup-message');
     const forgotMessage = document.getElementById('forgot-message');
 
-    const authWrapper = document.querySelector(".auth-wrapper"); // ✅ FIX
+    // ✅ FIXED HERE
+    const authWrapper = document.getElementById("auth-wrapper");
+
     const appContainer = document.getElementById('app');
     const welcomeScreen = document.getElementById("welcome-screen");
     const welcomeText = document.getElementById("welcome-text");
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let inactivityTimer;
     let listenersAdded = false;
 
-    // ✅ Hide app at start
+    // Hide app initially
     appContainer.style.display = "none";
 
     function startInactivityTimer() {
@@ -62,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         welcomeText.textContent = `Welcome, ${name}`;
 
-        // ✅ FIX: hide ENTIRE auth layout
+        // ✅ hide full auth layout
         authWrapper.style.display = "none";
 
         welcomeScreen.classList.add("show");
@@ -215,7 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
             let total = 0;
 
             if (!expenses.length) {
-                list.innerHTML = "<li>No expenses yet</li>";
                 totalDisplay.textContent = 0;
                 return;
             }
@@ -284,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {}
     };
 
-    // ✅ CLEAN LOGOUT (no reload)
+    // LOGOUT
     logoutBtn?.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
@@ -294,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
         authWrapper.style.display = "flex";
     });
 
-    // ✅ Auto login
+    // AUTO LOGIN
     if (token) {
         showWelcomeScreen();
     }
