@@ -97,40 +97,108 @@ body {
 }
 
 /* APP */
+/* ================= DASHBOARD ================= */
+
 #app {
   display: none;
   max-width: 600px;
   margin: 40px auto;
-  background: white;
+  background: #ffffff;
   padding: 25px;
   border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
+/* TITLE */
+#app h1 {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+#app h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #27ae60;
+}
+
+/* FORM LAYOUT (🔥 THIS IS THE MAIN FIX) */
 #form {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  flex-direction: column;   /* stack nicely */
+  gap: 12px;
 }
 
+/* INPUTS FULL WIDTH */
 #form input,
 #form select {
-  flex: 1;
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
+/* BUTTON FULL WIDTH */
 #form button {
-  padding: 10px;
-  border: 2px solid #27ae60;
-  background: white;
-  color: #27ae60;
-  border-radius: 6px;
+  width: 100%;
+  padding: 12px;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 #form button:hover {
-  background: #27ae60;
-  color: white;
+  background: #219150;
 }
 
+/* EXPENSE LIST */
+#list {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+#list li {
+  background: #f9f9f9;
+  padding: 10px;
+  border-left: 5px solid #27ae60;
+  margin-bottom: 10px;
+  border-radius: 6px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* DELETE BUTTON */
+#list button {
+  background: #e74c3c;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* LOGOUT BUTTON */
+#logout-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #e74c3c;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#logout-btn:hover {
+  background: #c0392b;
+}
 /* MOBILE */
 @media (max-width: 768px) {
   #auth-wrapper {
