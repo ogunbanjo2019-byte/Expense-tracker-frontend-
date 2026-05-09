@@ -30,10 +30,8 @@ console.log("email input:", document.getElementById("login-email"));
 
     let token = localStorage.getItem("token");
 
-    // Hide app initially
     appContainer.style.display = "none";
 
-    // ================= VIEW SWITCH =================
     function switchView(view) {
         loginBox.style.display = "none";
         signupBox.style.display = "none";
@@ -62,7 +60,6 @@ console.log("email input:", document.getElementById("login-email"));
         switchView(loginBox);
     });
 
-    // ================= MESSAGE =================
     function showMessage(el, text, color = "red") {
         if (!el) return;
         el.textContent = text;
@@ -70,7 +67,6 @@ console.log("email input:", document.getElementById("login-email"));
         setTimeout(() => el.textContent = "", 3000);
     }
 
-    // ================= LOGIN =================
     loginForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -103,7 +99,6 @@ console.log("email input:", document.getElementById("login-email"));
         }
     });
 
-    // ================= SIGNUP =================
     signupForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -132,7 +127,6 @@ console.log("email input:", document.getElementById("login-email"));
         }
     });
 
-    // ================= FORGOT =================
     forgotForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -158,7 +152,6 @@ console.log("email input:", document.getElementById("login-email"));
         }
     });
 
-    // ================= LOAD EXPENSES =================
     async function loadExpenses() {
         const token = localStorage.getItem("token");
 
@@ -190,8 +183,6 @@ console.log("email input:", document.getElementById("login-email"));
             console.log(err);
         }
     }
-
-    // ================= ADD =================
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -217,7 +208,6 @@ console.log("email input:", document.getElementById("login-email"));
         } catch (err) {}
     });
 
-    // ================= DELETE =================
     window.deleteExpense = async function(id) {
         const token = localStorage.getItem("token");
 
@@ -229,7 +219,6 @@ console.log("email input:", document.getElementById("login-email"));
         loadExpenses();
     };
 
-    // ================= LOGOUT =================
     logoutBtn?.addEventListener("click", () => {
         localStorage.clear();
 
@@ -237,7 +226,6 @@ console.log("email input:", document.getElementById("login-email"));
         authWrapper.style.display = "flex";
     });
 
-    // ================= AUTO LOGIN =================
     if (token) {
         authWrapper.style.display = "none";
         appContainer.style.display = "block";
