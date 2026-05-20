@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("list");
     const totalDisplay = document.getElementById("total");
 
-    
-const resetLink = `https://expense-tracker.vercel.app/reset-password.html?token=${resetToken}`;
+
+// const resetLink = `https://expense-tracker.vercel.app/reset-password.html?token=${resetToken}`;
     const BASE_URL =
     "https://expense-tracker-backend-1-afoj.onrender.com/api";
 
