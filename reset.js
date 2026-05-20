@@ -1,93 +1,55 @@
-const BASE_URL =
-"https://expense-tracker-backend-1-afoj.onrender.com/api";
+document.getElementById('reset-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-const form =
-document.getElementById("reset-form");
+    const password = document.getElementById('new-password').value;
+    const messageElement = document.getElementById('reset-message');
+    const submitButton = e.target.querySelector('button');
 
-const message =
-document.getElementById("reset-message");
-const params =
-new URLSearchParams(window.location.search);
+    // 1. Parse the token from the address bar parameter (?token=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
 
-const token =
-params.get("token");
-if (!token) {
+    if (!token) {
+        messageElement.style.color = "red";
+        messageElement.innerText = "Error: Invalid or missing reset token.";
+        return;
+    }
 
-    message.textContent =
-    "Invalid reset link";
+    // Disable button to prevent double submissions
+    submitButton.disabled = true;
+    messageElement.style.color = "#333";
+    messageElement.innerText = "Updating password...";
 
-    message.style.color =
-    "red";
+    try {
+        // 2. Point this directly to your live Render backend URL
+        const res = await fetch(`https://expense-tracker-backend-1-afoj.onrender.com/api/auth/reset-password/${token}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ password })
+        });
 
-} else {
+        const data = await res.json();
 
-    form.addEventListener("submit", async (e) => {
-
-        e.preventDefault();
-
-        const password =
-        document.getElementById("new-password").value;
-
-        if(password.length < 6){
-
-            message.textContent =
-            "Password must be at least 6 characters";
-
-            message.style.color =
-            "red";
-
-            return;
+        if (res.ok) {
+            messageElement.style.color = "green";
+            messageElement.innerText = "Password reset successful! Redirecting to login...";
+            
+            // 3. Send them back to your main application login page after 3 seconds
+            setTimeout(() => {
+                window.location.href = "https://expense-tracker.vercel.app/";
+            }, 3000);
+        } else {
+            messageElement.style.color = "red";
+            messageElement.innerText = data.message || "Failed to reset password.";
+            submitButton.disabled = false;
         }
 
-        try {
-
-            const res = await fetch(
-                `${BASE_URL}/auth/reset-password/${token}`,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        password
-                    })
-                }
-            );
-
-            const data = await res.json();
-
-            if(res.ok){
-
-                message.textContent =
-                "Password reset successful";
-
-                message.style.color =
-                "green";
-
-                setTimeout(() => {
-                    window.location.href = "/";
-
-                }, 2000);
-
-            } else {
-                message.textContent =
-                data.message || "Reset failed";
-
-                message.style.color =
-                "red";
-            }
-
-        } catch(err){
-
-            console.log(err);
-
-            message.textContent =
-            "Server error";
-
-            message.style.color =
-            "red";
-        }
-    });
-}
+    } catch (err) {
+        console.error(err);
+        messageElement.style.color = "red";
+        messageElement.innerText = "Server error. Please try again later.";
+        submitButton.disabled = false;
+    }
+});
