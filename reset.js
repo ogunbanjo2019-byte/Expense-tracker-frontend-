@@ -5,6 +5,9 @@ document.getElementById('reset-form').addEventListener('submit', async (e) => {
     const messageElement = document.getElementById('reset-message');
     const submitButton = e.target.querySelector('button');
 
+    // Updated BASE_URL to point to local backend
+    const BASE_URL = "http://localhost:5000/api";
+
     // 1. Parse the token from the address bar parameter (?token=...)
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -21,8 +24,8 @@ document.getElementById('reset-form').addEventListener('submit', async (e) => {
     messageElement.innerText = "Updating password...";
 
     try {
-        // 2. Point this directly to your live Render backend URL
-        const res = await fetch(`https://expense-tracker-backend-1-afoj.onrender.com/api/auth/reset-password/${token}`, {
+        // 2. Point this directly to your local backend
+        const res = await fetch(`${BASE_URL}/auth/reset-password/${token}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -38,7 +41,7 @@ document.getElementById('reset-form').addEventListener('submit', async (e) => {
             
             // 3. Send them back to your main application login page after 3 seconds
             setTimeout(() => {
-                window.location.href = "https://expense-tracker.vercel.app/";
+                window.location.href = "index.html";
             }, 3000);
         } else {
             messageElement.style.color = "red";
